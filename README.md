@@ -12,7 +12,7 @@ You can also configure the watchdog timer (How often it checks to see if the pro
 
 The timer setting is in ms, so 60000 is once per minute
 
-This app will only monitor SDRTrunk processes spawned by this app, e.g. if you started SDRTrunk from the .bat file, you will not bew able to monitor it or auto-restart on errors.
+This app will only monitor SDRTrunk processes spawned by this app, e.g. if you started SDRTrunk from the .bat file, you will not be able to monitor it or auto-restart on errors.
 
 If it does not auto restart a session, ensure the Auto Restart menu item is selected - it is disabled by default and will only display a message when it thinks SDRTrunk has failed.
 
