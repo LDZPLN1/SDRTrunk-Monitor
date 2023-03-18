@@ -124,7 +124,7 @@ Public Class TrayForm
                     Stop_SDRT()
                     Start_SDRT()
                 Else
-                    MsgBox("SDRTrunk appears to have failed", vbExclamation, "SDRTrunk Error")
+                    MsgBox("SDRTrunk appears to have failed" & System.Environment.NewLine & System.Environment.NewLine & args.Data, vbExclamation, "SDRTrunk Error")
                 End If
             End If
         End If
