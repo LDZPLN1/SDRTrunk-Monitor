@@ -28,6 +28,7 @@ Partial Class TrayForm
         StopMenuItem = New ToolStripMenuItem()
         RestartMenuItem = New ToolStripMenuItem()
         ToolStripSeparator1 = New ToolStripSeparator()
+        ViewLogMenuItem = New ToolStripMenuItem()
         AutoRestartMenuItem = New ToolStripMenuItem()
         ToolStripSeparator2 = New ToolStripSeparator()
         ExitMenuItem = New ToolStripMenuItem()
@@ -36,9 +37,9 @@ Partial Class TrayForm
         ' 
         ' TrayMenu
         ' 
-        TrayMenu.Items.AddRange(New ToolStripItem() {StartMenuItem, StopMenuItem, RestartMenuItem, ToolStripSeparator1, AutoRestartMenuItem, ToolStripSeparator2, ExitMenuItem})
+        TrayMenu.Items.AddRange(New ToolStripItem() {StartMenuItem, StopMenuItem, RestartMenuItem, ToolStripSeparator1, ViewLogMenuItem, AutoRestartMenuItem, ToolStripSeparator2, ExitMenuItem})
         TrayMenu.Name = "ContextMenuStrip1"
-        TrayMenu.Size = New Size(181, 148)
+        TrayMenu.Size = New Size(181, 170)
         TrayMenu.Text = "TEXT02"' 
         ' StartMenuItem
         ' 
@@ -62,6 +63,11 @@ Partial Class TrayForm
         ToolStripSeparator1.Name = "ToolStripSeparator1"
         ToolStripSeparator1.Size = New Size(177, 6)
         ' 
+        ' ViewLogMenuItem
+        ' 
+        ViewLogMenuItem.Name = "ViewLogMenuItem"
+        ViewLogMenuItem.Size = New Size(180, 22)
+        ViewLogMenuItem.Text = "View Log"' 
         ' AutoRestartMenuItem
         ' 
         AutoRestartMenuItem.CheckOnClick = True
@@ -101,4 +107,5 @@ Partial Class TrayForm
     Friend WithEvents ExitMenuItem As ToolStripMenuItem
     Friend WithEvents ToolStripSeparator2 As ToolStripSeparator
     Friend WithEvents AutoRestartMenuItem As ToolStripMenuItem
+    Friend WithEvents ViewLogMenuItem As ToolStripMenuItem
 End Class

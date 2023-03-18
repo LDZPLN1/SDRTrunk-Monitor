@@ -2,7 +2,7 @@
 
 Public Class TrayForm
     ' PATH TO SDRTRUNK
-    Private Shared ReadOnly sdrt_path As String = "C:\SDR\SDRTrunk6"
+    Private Shared ReadOnly sdrt_path As String = "C:\SDR\SDRTrunk"
 
     ' WATCHDOG TIMER IN ms
     Private Shared ReadOnly pchecktimer As New Timer(60000)
@@ -10,15 +10,16 @@ Public Class TrayForm
     ' STARTUP ARGUMENTS - UNCOMMENT BASED ON SDRTRUNK VERSION
 
     '0.5.x
-    'Private Shared ReadOnly SDRTArgs As String = "--add-exports=javafx.base/com.sun.javafx.event=ALL-UNNAMED --add-modules=jdk.incubator.vector --add-exports=java.desktop/com.sun.java.swing.plaf.windows=ALL-UNNAMED -classpath " & sdrt_path & "\lib\* io.github.dsheirer.gui.SDRTrunk"
+    Private Shared ReadOnly SDRTArgs As String = "--add-exports=javafx.base/com.sun.javafx.event=ALL-UNNAMED --add-modules=jdk.incubator.vector --add-exports=java.desktop/com.sun.java.swing.plaf.windows=ALL-UNNAMED -classpath " & sdrt_path & "\lib\* io.github.dsheirer.gui.SDRTrunk"
 
     '0.6.x
-    Private Shared ReadOnly SDRTArgs As String = "--add-exports=javafx.base/com.sun.javafx.event=ALL-UNNAMED --add-modules=jdk.incubator.vector --add-exports=java.desktop/com.sun.java.swing.plaf.windows=ALL-UNNAMED --enable-preview --enable-native-access=ALL-UNNAMED ""-Djava.library.path=C:\Program Files\SDRplay\API\x64"" -classpath C:\SDR\SDRTrunk6\lib\* io.github.dsheirer.gui.SDRTrunk"
+    'Private Shared ReadOnly SDRTArgs As String = "--add-exports=javafx.base/com.sun.javafx.event=ALL-UNNAMED --add-modules=jdk.incubator.vector --add-exports=java.desktop/com.sun.java.swing.plaf.windows=ALL-UNNAMED -classpath " & sdrt_path & "\lib\* io.github.dsheirer.gui.SDRTrunk --enable-preview --enable-native-access=ALL-UNNAMED ""-Djava.library.path=C:\Program Files\SDRplay\API\x64"""
 
     Private Shared ReadOnly sdrproc As New Process()
 
     ' SETUP WATCHDOG TIMER AND START IT
     Public Sub Startup()
+        AddHandler sdrproc.OutputDataReceived, AddressOf ReadStandardOutput
         AddHandler pchecktimer.Elapsed, New ElapsedEventHandler(AddressOf TimerElapsed)
         pchecktimer.Start()
         pchecktimer.Enabled = False
@@ -42,6 +43,11 @@ Public Class TrayForm
                 Me.RestartMenuItem.Enabled = False
         End Select
 
+        If LogWindow.Visible Then
+            Me.ViewLogMenuItem.Enabled = False
+        Else
+            Me.ViewLogMenuItem.Enabled = True
+        End If
         TrayMenu.Show(Cursor.Position)
         Me.Left = TrayMenu.Left + 1
         Me.Top = TrayMenu.Top + 1
@@ -68,15 +74,10 @@ Public Class TrayForm
         Start_SDRT()
     End Sub
 
-    ' AUTO RESTART - SET WATCHDOG TIMER STATE WHEN AUTO RESTART SETTING IS CHANGED
-    Private Sub AutoRestartMenuItem_CheckStateChanged(sender As Object, e As EventArgs) Handles AutoRestartMenuItem.CheckStateChanged
-        If Me.AutoRestartMenuItem.CheckState = CheckState.Unchecked Then
-            pchecktimer.Enabled = False
-        Else
-            If SDRTState() = 1 Then
-                pchecktimer.Enabled = True
-            End If
-        End If
+    ' SHOW LOG WINDOW
+    Private Sub ViewLogMenuItem_Click(sender As Object, e As EventArgs) Handles ViewLogMenuItem.Click
+        LogWindow.Show()
+        LogWindow.Focus()
     End Sub
 
     ' MENU ITEM TO EXIT PROGRAM
@@ -87,8 +88,6 @@ Public Class TrayForm
 
     ' START SDRTRUNK IN A NEW PROCESS AND REDIRECT STANDARD OUTPUT TO ASYNC OUTPUT HANDLER
     Private Sub Start_SDRT()
-        AddHandler sdrproc.OutputDataReceived, AddressOf ReadStandardOutput
-
         Try
             sdrproc.CancelOutputRead()
         Catch ex As Exception
@@ -102,10 +101,11 @@ Public Class TrayForm
         sdrproc.Start()
         sdrproc.BeginOutputReadLine()
 
-        ' ENABLE WATCHDOG TIMER IF AUTO RESTART IS ENABLED
-        If Me.AutoRestartMenuItem.CheckState = CheckState.Checked Then
-            pchecktimer.Enabled = True
-        End If
+        LogWindow.Show()
+        LogWindow.Focus()
+
+        ' ENABLE WATCHDOG TIMER
+        pchecktimer.Enabled = True
     End Sub
 
     ' STOP SDRTRUNK AND DISABLE WATCHDOG TIMER
@@ -117,7 +117,7 @@ Public Class TrayForm
     ' ASYNC OUTPUT HANDLER FOR SDRTRUNK COMMAND WINDOW - MONITOR FOR ERRORS
     Private Sub ReadStandardOutput(sender As Object, args As DataReceivedEventArgs)
         If args.Data IsNot Nothing Then
-            Debug.Print(args.Data)
+            UpdateLog(args.Data)
 
             If args.Data.Contains("Couldn't design final output low pass filter") Or args.Data.Contains("org.usb4java.LibUsbException") Then
                 If Me.AutoRestartMenuItem.CheckState = CheckState.Checked Then
@@ -125,15 +125,31 @@ Public Class TrayForm
                     Start_SDRT()
                 Else
                     MsgBox("SDRTrunk appears to have failed" & System.Environment.NewLine & System.Environment.NewLine & args.Data, vbExclamation, "SDRTrunk Error")
+                    pchecktimer.Enabled = False
                 End If
             End If
+        End If
+    End Sub
+
+    ' UPDATE LOG WINDOW
+    Public Sub UpdateLog(ltext)
+        If Me.InvokeRequired Then
+            Me.Invoke(Sub() UpdateLog(ltext))
+        Else
+            LogWindow.LogTextBox.AppendText(ltext & System.Environment.NewLine)
         End If
     End Sub
 
     ' CHECK PROCESS STATUS WHEN WATCHDOG TIMER FIRES
     Private Sub TimerElapsed(ByVal sender As Object, ByVal e As ElapsedEventArgs)
         If SDRTState() = 0 Then
-            Start_SDRT()
+            If Me.AutoRestartMenuItem.CheckState = CheckState.Checked Then
+                Stop_SDRT()
+                Start_SDRT()
+            Else
+                MsgBox("SDRTrunk process appears to have exited", vbExclamation, "SDRTrunk Not Running")
+                pchecktimer.Enabled = False
+            End If
         End If
     End Sub
 
