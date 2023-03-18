@@ -2,10 +2,18 @@
 
 Public Class TrayForm
     ' PATH TO SDRTRUNK
-    Private Shared ReadOnly sdrt_path As String = "C:\SDR\SDRTrunk"
+    Private Shared ReadOnly sdrt_path As String = "C:\SDR\SDRTrunk6"
 
     ' WATCHDOG TIMER IN ms
     Private Shared ReadOnly pchecktimer As New Timer(60000)
+
+    ' STARTUP ARGUMENTS - UNCOMMENT BASED ON SDRTRUNK VERSION
+
+    '0.5.x
+    'Private Shared ReadOnly SDRTArgs As String = "--add-exports=javafx.base/com.sun.javafx.event=ALL-UNNAMED --add-modules=jdk.incubator.vector --add-exports=java.desktop/com.sun.java.swing.plaf.windows=ALL-UNNAMED -classpath " & sdrt_path & "\lib\* io.github.dsheirer.gui.SDRTrunk"
+
+    '0.6.x
+    Private Shared ReadOnly SDRTArgs As String = "--add-exports=javafx.base/com.sun.javafx.event=ALL-UNNAMED --add-modules=jdk.incubator.vector --add-exports=java.desktop/com.sun.java.swing.plaf.windows=ALL-UNNAMED --enable-preview --enable-native-access=ALL-UNNAMED ""-Djava.library.path=C:\Program Files\SDRplay\API\x64"" -classpath C:\SDR\SDRTrunk6\lib\* io.github.dsheirer.gui.SDRTrunk"
 
     Private Shared ReadOnly sdrproc As New Process()
 
@@ -90,7 +98,7 @@ Public Class TrayForm
         sdrproc.StartInfo.UseShellExecute = False
         sdrproc.StartInfo.RedirectStandardOutput = True
         sdrproc.StartInfo.FileName = sdrt_path & "\bin\java.exe"
-        sdrproc.StartInfo.Arguments = "--add-exports=javafx.base/com.sun.javafx.event=ALL-UNNAMED --add-modules=jdk.incubator.vector --add-exports=java.desktop/com.sun.java.swing.plaf.windows=ALL-UNNAMED -classpath " & sdrt_path & "\lib\* io.github.dsheirer.gui.SDRTrunk"
+        sdrproc.StartInfo.Arguments = SDRTArgs
         sdrproc.Start()
         sdrproc.BeginOutputReadLine()
 

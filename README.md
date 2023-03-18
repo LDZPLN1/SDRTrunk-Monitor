@@ -12,6 +12,14 @@ You can also configure the watchdog timer (How often it checks to see if the pro
 
 The timer setting is in ms, so 60000 is once per minute
 
+Also, you will need to comment or uncomment Argument lines depending on which version you are running:
+
+    '0.5.x
+    'Private Shared ReadOnly SDRTArgs As String = "--add-exports=javafx.base/com.sun.javafx.event=ALL-UNNAMED --add-modules=jdk.incubator.vector --add-exports=java.desktop/com.sun.java.swing.plaf.windows=ALL-UNNAMED -classpath " & sdrt_path & "\lib\* io.github.dsheirer.gui.SDRTrunk"
+
+    '0.6.x
+    Private Shared ReadOnly SDRTArgs As String = "--add-exports=javafx.base/com.sun.javafx.event=ALL-UNNAMED --add-modules=jdk.incubator.vector --add-exports=java.desktop/com.sun.java.swing.plaf.windows=ALL-UNNAMED --enable-preview --enable-native-access=ALL-UNNAMED ""-Djava.library.path=C:\Program Files\SDRplay\API\x64"" -classpath C:\SDR\SDRTrunk6\lib\* io.github.dsheirer.gui.SDRTrunk"
+
 This app will only monitor SDRTrunk processes spawned by this app, e.g. if you started SDRTrunk from the .bat file, you will not be able to monitor it or auto-restart on errors.
 
 If it does not auto restart a session, ensure the Auto Restart menu item is selected - it is disabled by default and will only display a message when it thinks SDRTrunk has failed.
