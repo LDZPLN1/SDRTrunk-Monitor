@@ -64,9 +64,7 @@ Partial Class TrayForm
         ' 
         ' AutoRestartMenuItem
         ' 
-        AutoRestartMenuItem.Checked = True
         AutoRestartMenuItem.CheckOnClick = True
-        AutoRestartMenuItem.CheckState = CheckState.Checked
         AutoRestartMenuItem.Name = "AutoRestartMenuItem"
         AutoRestartMenuItem.Size = New Size(180, 22)
         AutoRestartMenuItem.Text = "Auto Restart"' 
