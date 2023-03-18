@@ -22,6 +22,7 @@ Partial Class LogWindow
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
+        Dim resources As ComponentModel.ComponentResourceManager = New ComponentModel.ComponentResourceManager(GetType(LogWindow))
         LogTextBox = New TextBox()
         SuspendLayout()
         ' 
@@ -42,6 +43,7 @@ Partial Class LogWindow
         ClientSize = New Size(1284, 412)
         Controls.Add(LogTextBox)
         Font = New Font("Consolas", 9F, FontStyle.Regular, GraphicsUnit.Point)
+        Icon = CType(resources.GetObject("$this.Icon"), Icon)
         Name = "LogWindow"
         Text = "Log"
         ResumeLayout(False)
