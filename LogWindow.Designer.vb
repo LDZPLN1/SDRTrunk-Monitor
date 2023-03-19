@@ -35,6 +35,7 @@ Partial Class LogWindow
         LogTextBox.ScrollBars = ScrollBars.Both
         LogTextBox.Size = New Size(1282, 412)
         LogTextBox.TabIndex = 0
+        LogTextBox.WordWrap = False
         ' 
         ' LogWindow
         ' 

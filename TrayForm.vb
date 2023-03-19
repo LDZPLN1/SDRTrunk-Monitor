@@ -1,4 +1,5 @@
-﻿Imports System.Timers
+﻿Imports System.Runtime.InteropServices
+Imports System.Timers
 
 Public Class TrayForm
     ' PATH TO SDRTRUNK
@@ -90,7 +91,12 @@ Public Class TrayForm
     End Sub
 
     ' START SDRTRUNK IN A NEW PROCESS AND REDIRECT STANDARD OUTPUT TO ASYNC OUTPUT HANDLER
-    Private Shared Sub Start_SDRT()
+    Private Sub Start_SDRT()
+        If sdrprocid <> 0 Then
+            sdrproc.CancelOutputRead()
+            sdrproc.Close()
+        End If
+
         sdrproc.StartInfo.UseShellExecute = False
         sdrproc.StartInfo.RedirectStandardOutput = True
         sdrproc.StartInfo.FileName = sdrt_path & "\bin\java.exe"
@@ -100,12 +106,27 @@ Public Class TrayForm
         sdrproc.BeginOutputReadLine()
 
         LogWindow.Show()
-        LogWindow.Focus()
-        Application.DoEvents()
 
         ' ENABLE WATCHDOG TIMER
         pchecktimer.Enabled = True
+
+        ' MINIMIZE INITIAL JAVA WINDOW
+        Threading.Thread.Sleep(1500)
+
+        Dim proclist As Process() = Process.GetProcesses
+
+        For Each sproc As Process In proclist
+            If sproc.MainWindowTitle = sdrt_path & "\bin\java.exe" Then
+                SetWindow(sproc.MainWindowHandle, 2)
+            End If
+        Next
+
+        LogWindow.Focus()
     End Sub
+
+    <DllImport("User32.dll", EntryPoint:="ShowWindow", SetLastError:=True)>
+    Private Shared Function SetWindow(ByVal hWnd As IntPtr, nShowCmd As Integer) As Boolean
+    End Function
 
     ' STOP SDRTRUNK AND DISABLE WATCHDOG TIMER
     Private Shared Sub Stop_SDRT()
