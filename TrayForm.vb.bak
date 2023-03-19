@@ -16,7 +16,6 @@ Public Class TrayForm
     'Private Shared ReadOnly SDRTArgs As String = "--add-exports=javafx.base/com.sun.javafx.event=ALL-UNNAMED --add-modules=jdk.incubator.vector --add-exports=java.desktop/com.sun.java.swing.plaf.windows=ALL-UNNAMED -classpath " & sdrt_path & "\lib\* io.github.dsheirer.gui.SDRTrunk --enable-preview --enable-native-access=ALL-UNNAMED ""-Djava.library.path=C:\Program Files\SDRplay\API\x64"""
 
     Private Shared ReadOnly sdrproc As New Process()
-    Private Shared sdrprocid As Integer = 0
 
     ' SETUP WATCHDOG TIMER AND START IT
     Public Sub Startup()
@@ -49,7 +48,6 @@ Public Class TrayForm
         Else
             Me.ViewLogMenuItem.Enabled = True
         End If
-
         TrayMenu.Show(Cursor.Position)
         Me.Left = TrayMenu.Left + 1
         Me.Top = TrayMenu.Top + 1
@@ -76,11 +74,10 @@ Public Class TrayForm
         Start_SDRT()
     End Sub
 
-    ' MENU ITEM TO SHOW LOG WINDOW
+    ' SHOW LOG WINDOW
     Private Sub ViewLogMenuItem_Click(sender As Object, e As EventArgs) Handles ViewLogMenuItem.Click
         LogWindow.Show()
         LogWindow.Focus()
-        Application.DoEvents()
     End Sub
 
     ' MENU ITEM TO EXIT PROGRAM
@@ -90,18 +87,22 @@ Public Class TrayForm
     End Sub
 
     ' START SDRTRUNK IN A NEW PROCESS AND REDIRECT STANDARD OUTPUT TO ASYNC OUTPUT HANDLER
-    Private Shared Sub Start_SDRT()
+    Private Sub Start_SDRT()
+        Try
+            sdrproc.CancelOutputRead()
+        Catch ex As Exception
+        End Try
+
+        sdrproc.Close()
         sdrproc.StartInfo.UseShellExecute = False
         sdrproc.StartInfo.RedirectStandardOutput = True
         sdrproc.StartInfo.FileName = sdrt_path & "\bin\java.exe"
         sdrproc.StartInfo.Arguments = SDRTArgs
         sdrproc.Start()
-        sdrprocid = sdrproc.Id
         sdrproc.BeginOutputReadLine()
 
         LogWindow.Show()
         LogWindow.Focus()
-        Application.DoEvents()
 
         ' ENABLE WATCHDOG TIMER
         pchecktimer.Enabled = True
@@ -110,11 +111,7 @@ Public Class TrayForm
     ' STOP SDRTRUNK AND DISABLE WATCHDOG TIMER
     Private Shared Sub Stop_SDRT()
         sdrproc.Kill()
-        sdrproc.CancelOutputRead()
-        sdrproc.Close()
-        sdrprocid = 0
         pchecktimer.Enabled = False
-        LogWindow.Hide()
     End Sub
 
     ' ASYNC OUTPUT HANDLER FOR SDRTRUNK COMMAND WINDOW - MONITOR FOR ERRORS
@@ -150,12 +147,8 @@ Public Class TrayForm
                 Stop_SDRT()
                 Start_SDRT()
             Else
-                sdrproc.CancelOutputRead()
-                sdrproc.Close()
-                sdrprocid = 0
-                pchecktimer.Enabled = False
-                LogWindow.Hide()
                 MsgBox("SDRTrunk process appears to have exited", vbExclamation, "SDRTrunk Not Running")
+                pchecktimer.Enabled = False
             End If
         End If
     End Sub
@@ -167,15 +160,17 @@ Public Class TrayForm
 
     Private Shared Function SDRTState()
         SDRTState = 0
+        Dim pid As Integer
         Dim proclist As Process() = Process.GetProcessesByName("java")
 
         For Each sproc As Process In proclist
             If sproc.MainModule.FileName = sdrt_path & "\bin\java.exe" Then
-                If sproc.Id = sdrprocid Then
+                Try
+                    pid = sdrproc.Id
                     SDRTState = 1
-                Else
+                Catch ex As System.InvalidOperationException
                     SDRTState = 2
-                End If
+                End Try
             End If
         Next
     End Function
