@@ -114,7 +114,6 @@ Public Class TrayForm
         Dim sprocrun As Boolean = False
         Dim proclist As Process()
 
-        Threading.Thread.Sleep(1500)
         Do Until sprocrun = True
             Threading.Thread.Sleep(50)
             proclist = Process.GetProcesses
