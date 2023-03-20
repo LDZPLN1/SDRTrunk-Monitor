@@ -111,15 +111,24 @@ Public Class TrayForm
         pchecktimer.Enabled = True
 
         ' MINIMIZE INITIAL JAVA WINDOW
+        Dim sprocrun As Boolean = False
+        Dim proclist As Process()
+
         Threading.Thread.Sleep(1500)
+        Do Until sprocrun = True
+            Threading.Thread.Sleep(50)
+            proclist = Process.GetProcesses
 
-        Dim proclist As Process() = Process.GetProcesses
+            For Each sproc As Process In proclist
+                If sproc.MainWindowTitle = sdrt_path & "\bin\java.exe" Then
+                    SetWindow(sproc.MainWindowHandle, 2)
+                    sprocrun = True
+                    Exit For
+                End If
+            Next
 
-        For Each sproc As Process In proclist
-            If sproc.MainWindowTitle = sdrt_path & "\bin\java.exe" Then
-                SetWindow(sproc.MainWindowHandle, 2)
-            End If
-        Next
+            Application.DoEvents()
+        Loop
 
         LogWindow.Focus()
     End Sub
@@ -143,7 +152,7 @@ Public Class TrayForm
         If args.Data IsNot Nothing Then
             UpdateLog(args.Data)
 
-            If args.Data.Contains("Couldn't design final output low pass filter") Or args.Data.Contains("org.usb4java.LibUsbException") Then
+            If args.Data.Contains("Couldn't design final output low pass filter") Or args.Data.Contains("org.usb4java.LibUsbException") Or args.Data.Contains("java.lang.IllegalArgumentException") Then
                 If Me.AutoRestartMenuItem.CheckState = CheckState.Checked Then
                     Stop_SDRT()
                     Start_SDRT()
