@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33502.453
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "SDRTrunk Monitor", "SDRTrunk Monitor.vbproj", "{C22784EF-8BD9-4547-A30A-B312BC97788A}"
+Project("{778DAE3C-4631-46EA-AA77-85C1314464D9}") = "SDRTrunk Monitor", "SDRTrunk Monitor.vbproj", "{C22784EF-8BD9-4547-A30A-B312BC97788A}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "SDR Monitor Setup", "..\SDR Monitor Setup\SDR Monitor Setup.vdproj", "{74D0E258-628E-495D-BDB4-96B599EF8F69}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,8 @@ Global
 		{C22784EF-8BD9-4547-A30A-B312BC97788A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C22784EF-8BD9-4547-A30A-B312BC97788A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C22784EF-8BD9-4547-A30A-B312BC97788A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{74D0E258-628E-495D-BDB4-96B599EF8F69}.Debug|Any CPU.ActiveCfg = Debug
+		{74D0E258-628E-495D-BDB4-96B599EF8F69}.Release|Any CPU.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
