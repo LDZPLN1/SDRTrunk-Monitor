@@ -122,6 +122,7 @@ Public Class PrimaryForm
 
             Do Until sprocrun = True
                 Threading.Thread.Sleep(50)
+                Application.DoEvents()
                 attempts += 1
                 proclist = Process.GetProcesses
 
@@ -140,6 +141,8 @@ Public Class PrimaryForm
 
             ' ENABLE WATCHDOG TIMER
             pchecktimer.Enabled = True
+            Threading.Thread.Sleep(500)
+            Application.DoEvents()
         End If
     End Sub
 
@@ -156,6 +159,7 @@ Public Class PrimaryForm
                 sdrproc.Close()
                 sdrprocid = 0
                 LogWindow.Hide()
+                Threading.Thread.Sleep(500)
                 Application.DoEvents()
             End If
         End If
