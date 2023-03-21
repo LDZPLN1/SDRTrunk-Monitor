@@ -164,7 +164,7 @@ Public Class PrimaryForm
         If args.Data IsNot Nothing Then
             Me.Invoke(Sub() UpdateLog(args.Data))
 
-            If args.Data.Contains("Couldn't design final output low pass filter") Or args.Data.Contains("org.usb4java.LibUsbException") Or args.Data.Contains("java.lang.IllegalArgumentException") Then
+            If args.Data.Contains("Couldn't design final output low pass filter") Or args.Data.Contains("org.usb4java.LibUsbException") Or args.Data.Contains("java.lang.IllegalArgumentException") Or args.Data.Contains("throwing away samples") Then
                 If Me.AutoRestartMenuItem.CheckState = CheckState.Checked Then
                     TrayNotifyIcon.BalloonTipText = "SDRTRunk Process Appears to Have Failed. Restarting"
                     TrayNotifyIcon.ShowBalloonTip(1)
