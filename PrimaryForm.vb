@@ -13,14 +13,12 @@ Public Class PrimaryForm
         AddHandler sdrproc.OutputDataReceived, AddressOf ReadStandardOutput
         AddHandler pchecktimer.Elapsed, New ElapsedEventHandler(AddressOf TimerElapsed)
 
-        If My.Settings.Watchdog < 5 Or My.Settings.Watchdog > 3600 Then
-            My.Settings.Watchdog = 60
-        End If
+        If My.Settings.Watchdog < 5 Or My.Settings.Watchdog > 3600 Then My.Settings.Watchdog = 60
 
         Do Until File.Exists(My.Settings.SDRTPath & "\bin\sdr-trunk.bat")
             Dim result As DialogResult = MessageBox.Show("Unable to locate SDRTrunk. Update settings?", "SDRTrunk Not Found", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
 
-            If result = DialogResult.Yes Then
+            If result = DialogResult.Yes Then 
                 SettingsForm.ShowDialog()
             Else
                 End
@@ -117,15 +115,14 @@ Public Class PrimaryForm
             LogWindow.Show()
             Application.DoEvents()
 
-            ' ENABLE WATCHDOG TIMER
-            pchecktimer.Enabled = True
-
             ' MINIMIZE INITIAL JAVA WINDOW
             Dim sprocrun As Boolean = False
             Dim proclist As Process()
+            Dim attempts As Integer = 0
 
             Do Until sprocrun = True
                 Threading.Thread.Sleep(50)
+                attempts += 1
                 proclist = Process.GetProcesses
 
                 For Each sproc As Process In proclist
@@ -135,9 +132,14 @@ Public Class PrimaryForm
                         Exit For
                     End If
                 Next
+
+                If attempts = 40 Then sprocrun = True
             Loop
 
             LogWindow.Focus()
+
+            ' ENABLE WATCHDOG TIMER
+            pchecktimer.Enabled = True
         End If
     End Sub
 

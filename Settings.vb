@@ -71,9 +71,7 @@ Public Class SettingsForm
 
     ' VALIDATE POLL TIMER SETTING IS AN INTEGER AND WITHIN RANGE
     Private Sub PollTimerTextBox_Validating(sender As Object, e As CancelEventArgs) Handles PollTimerTextBox.Validating
-        If PollTimerTextBox.TextLength = 0 Then
-            PollTimerTextBox.Text = "60"
-        End If
+        If PollTimerTextBox.TextLength = 0 Then PollTimerTextBox.Text = "60"
 
         If Integer.TryParse(PollTimerTextBox.Text, Nothing) Then
             If Int(PollTimerTextBox.Text) < 5 Or Int(PollTimerTextBox.Text) > 3600 Then
