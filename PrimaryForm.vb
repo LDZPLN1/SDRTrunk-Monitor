@@ -1,7 +1,6 @@
 ﻿Imports System.ComponentModel
 Imports System.IO
 Imports System.Runtime.InteropServices
-Imports System.Security.Cryptography
 Imports System.Timers
 
 Public Class PrimaryForm
