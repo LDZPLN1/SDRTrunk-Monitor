@@ -19,7 +19,7 @@ Public Class PrimaryForm
         End If
 
         Do Until File.Exists(My.Settings.SDRTPath & "\bin\sdr-trunk.bat")
-            Dim result As DialogResult = MessageBox.Show("Unable to locate SDRTrunk. Updates settings?", "SDRTrunk Not Found", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
+            Dim result As DialogResult = MessageBox.Show("Unable to locate SDRTrunk. Update settings?", "SDRTrunk Not Found", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
 
             If result = DialogResult.Yes Then
                 SettingsForm.ShowDialog()
