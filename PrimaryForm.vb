@@ -3,9 +3,11 @@ Imports System.IO
 Imports System.Runtime.InteropServices
 Imports System.Timers
 
+
 Public Class PrimaryForm
     Private Shared sdrprocid As Integer = 0
     Private Shared ReadOnly sdrproc As New Process()
+    Private Shared ignorefuture As Boolean = False
 
     Public pchecktimer As New Timer(60000)
 
@@ -18,7 +20,7 @@ Public Class PrimaryForm
         Do Until File.Exists(My.Settings.SDRTPath & "\bin\sdr-trunk.bat")
             Dim result As DialogResult = MessageBox.Show("Unable to locate SDRTrunk. Update settings?", "SDRTrunk Not Found", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
 
-            If result = DialogResult.Yes Then 
+            If result = DialogResult.Yes Then
                 SettingsForm.ShowDialog()
             Else
                 End
@@ -140,9 +142,9 @@ Public Class PrimaryForm
             LogWindow.Focus()
 
             ' ENABLE WATCHDOG TIMER
+            ignorefuture = False
             pchecktimer.Enabled = True
-            Threading.Thread.Sleep(500)
-            Application.DoEvents()
+            Stall(500)
         End If
     End Sub
 
@@ -155,12 +157,10 @@ Public Class PrimaryForm
                 pchecktimer.Enabled = False
                 sdrproc.CancelOutputRead()
                 sdrproc.Kill()
-                sdrproc.WaitForExit()
                 sdrproc.Close()
                 sdrprocid = 0
                 LogWindow.Hide()
-                Threading.Thread.Sleep(500)
-                Application.DoEvents()
+                Stall(500)
             End If
         End If
     End Sub
@@ -174,11 +174,15 @@ Public Class PrimaryForm
                 If Me.AutoRestartMenuItem.CheckState = CheckState.Checked Then
                     TrayNotifyIcon.BalloonTipText = "SDRTRunk Process Appears to Have Failed. Restarting"
                     TrayNotifyIcon.ShowBalloonTip(1)
+                    Stall(2000)
                     StopSDRT()
                     StartSDRT()
                 Else
-                    TrayNotifyIcon.BalloonTipText = "SDRTRunk Process Appears to Have Failed"
-                    TrayNotifyIcon.ShowBalloonTip(1)
+                    If Not ignorefuture Then
+                        TrayNotifyIcon.BalloonTipText = "SDRTRunk Process Appears to Have Failed"
+                        TrayNotifyIcon.ShowBalloonTip(1)
+                        ignorefuture = True
+                    End If
                 End If
             End If
         End If
@@ -196,6 +200,7 @@ Public Class PrimaryForm
             If Me.AutoRestartMenuItem.CheckState = CheckState.Checked Then
                 TrayNotifyIcon.BalloonTipText = "SDRTRunk Process has Exited. Restarting"
                 TrayNotifyIcon.ShowBalloonTip(1)
+                Stall(2000)
                 StopSDRT()
                 StartSDRT()
             Else
@@ -212,6 +217,15 @@ Public Class PrimaryForm
 
     Private Shared Sub HideLog()
         LogWindow.Hide()
+    End Sub
+
+    Private Shared Sub Stall(stime As Integer)
+        Dim sloops As Integer = Int(stime / 50)
+
+        For tloop As Integer = 1 To sloops
+            Threading.Thread.Sleep(50)
+            Application.DoEvents()
+        Next
     End Sub
 
     <DllImport("User32.dll", EntryPoint:="ShowWindow", SetLastError:=True)>

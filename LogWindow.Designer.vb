@@ -28,12 +28,15 @@ Partial Class LogWindow
         ' 
         ' LogTextBox
         ' 
+        LogTextBox.BackColor = SystemColors.Control
+        LogTextBox.Font = New Font("Consolas", 8.25F, FontStyle.Regular, GraphicsUnit.Point)
+        LogTextBox.ForeColor = SystemColors.WindowText
         LogTextBox.Location = New Point(0, 0)
         LogTextBox.Multiline = True
         LogTextBox.Name = "LogTextBox"
         LogTextBox.ReadOnly = True
         LogTextBox.ScrollBars = ScrollBars.Both
-        LogTextBox.Size = New Size(1282, 412)
+        LogTextBox.Size = New Size(1064, 598)
         LogTextBox.TabIndex = 0
         LogTextBox.WordWrap = False
         ' 
@@ -41,7 +44,8 @@ Partial Class LogWindow
         ' 
         AutoScaleDimensions = New SizeF(7F, 14F)
         AutoScaleMode = AutoScaleMode.Font
-        ClientSize = New Size(1284, 412)
+        BackColor = SystemColors.Control
+        ClientSize = New Size(1064, 597)
         Controls.Add(LogTextBox)
         Font = New Font("Consolas", 9F, FontStyle.Regular, GraphicsUnit.Point)
         Icon = CType(resources.GetObject("$this.Icon"), Icon)
