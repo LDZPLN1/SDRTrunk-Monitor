@@ -5,13 +5,23 @@ Imports System.Timers
 
 
 Public Class PrimaryForm
+    Private oMutex As System.Threading.Mutex
     Private Shared sdrprocid As Integer = 0
     Private Shared ReadOnly sdrproc As New Process()
     Private Shared ignorefuture As Boolean = False
 
     Public pchecktimer As New Timer(60000)
 
+    ' VALIDATE SETTINGS AND START WATCHDOG TIMER
     Private Sub PrimaryForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        oMutex = New System.Threading.Mutex(False, "SDRTrunk Monitor")
+
+        If oMutex.WaitOne(0, False) = False Then
+            oMutex.Close()
+            oMutex = Nothing
+            End
+        End If
+
         AddHandler sdrproc.OutputDataReceived, AddressOf ReadStandardOutput
         AddHandler pchecktimer.Elapsed, New ElapsedEventHandler(AddressOf TimerElapsed)
 
@@ -33,6 +43,7 @@ Public Class PrimaryForm
         pchecktimer.Enabled = False
     End Sub
 
+    ' ENABLE/DISABLE MENU ITEMS BASED ON PROCESS STATE
     Private Sub TrayMenu_Opening(sender As Object, e As CancelEventArgs) Handles TrayMenu.Opening
         Select Case SDRTState()
             Case 0

@@ -46,7 +46,8 @@ Partial Class SettingsForm
         PathLabel.Name = "PathLabel"
         PathLabel.Size = New Size(86, 15)
         PathLabel.TabIndex = 0
-        PathLabel.Text = "SDRTrunk Path:"' 
+        PathLabel.Text = "SDRTrunk Path:"
+        ' 
         ' SaveButton
         ' 
         SaveButton.Location = New Point(445, 82)
@@ -83,7 +84,8 @@ Partial Class SettingsForm
         VersionGroupBox.Size = New Size(123, 53)
         VersionGroupBox.TabIndex = 3
         VersionGroupBox.TabStop = False
-        VersionGroupBox.Text = "SDRTrunk Version"' 
+        VersionGroupBox.Text = "SDRTrunk Version"
+        ' 
         ' V6RadioButton
         ' 
         V6RadioButton.AutoSize = True
@@ -113,7 +115,8 @@ Partial Class SettingsForm
         TimerLabel.Name = "TimerLabel"
         TimerLabel.Size = New Size(92, 15)
         TimerLabel.TabIndex = 5
-        TimerLabel.Text = "Poll Timer (Sec):"' 
+        TimerLabel.Text = "Poll Timer (Sec):"
+        ' 
         ' PollTimerTextBox
         ' 
         PollTimerTextBox.Location = New Point(110, 53)
