@@ -179,9 +179,9 @@ Public Class PrimaryForm
     ' ASYNC OUTPUT HANDLER FOR SDRTRUNK COMMAND WINDOW - MONITOR FOR ERRORS
     Private Sub ReadStandardOutput(sender As Object, args As DataReceivedEventArgs)
         If args.Data IsNot Nothing Then
-            Me.Invoke(Sub() UpdateLog(args.Data))
-
             If args.Data.Contains("Couldn't design final output low pass filter") Or args.Data.Contains("org.usb4java.LibUsbException") Or args.Data.Contains("java.lang.IllegalArgumentException") Or args.Data.Contains("throwing away samples") Then
+                Me.Invoke(Sub() UpdateLog(args.Data, True))
+
                 If Me.AutoRestartMenuItem.CheckState = CheckState.Checked Then
                     TrayNotifyIcon.BalloonTipText = "SDRTRunk Process Appears to Have Failed. Restarting"
                     TrayNotifyIcon.ShowBalloonTip(1)
@@ -195,13 +195,31 @@ Public Class PrimaryForm
                         ignorefuture = True
                     End If
                 End If
+            Else
+                Me.Invoke(Sub() UpdateLog(args.Data, False))
             End If
         End If
     End Sub
 
     ' UPDATE LOG WINDOW
-    Public Shared Sub UpdateLog(ltext)
+    Public Shared Sub UpdateLog(ltext As String, highlight As Boolean)
+        Dim ltextfcolor As New ColorDialog()
+        Dim ltextbcolor As New ColorDialog()
+
+        If highlight Then
+            ltextfcolor.Color = LogWindow.LogTextBox.SelectionColor
+            ltextbcolor.Color = LogWindow.LogTextBox.SelectionBackColor
+            LogWindow.LogTextBox.SelectionColor = Color.White
+            LogWindow.LogTextBox.SelectionBackColor = Color.DarkRed
+        End If
+
         LogWindow.LogTextBox.AppendText(ltext & System.Environment.NewLine)
+
+        If highlight Then
+            LogWindow.LogTextBox.SelectionColor = ltextfcolor.Color
+            LogWindow.LogTextBox.SelectionBackColor = ltextbcolor.Color
+        End If
+
         LogWindow.Refresh()
     End Sub
 

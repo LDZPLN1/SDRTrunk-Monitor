@@ -23,22 +23,18 @@ Partial Class LogWindow
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
         Dim resources As ComponentModel.ComponentResourceManager = New ComponentModel.ComponentResourceManager(GetType(LogWindow))
-        LogTextBox = New TextBox()
+        LogTextBox = New RichTextBox()
         SuspendLayout()
         ' 
         ' LogTextBox
         ' 
-        LogTextBox.BackColor = SystemColors.Control
         LogTextBox.Font = New Font("Consolas", 8.25F, FontStyle.Regular, GraphicsUnit.Point)
-        LogTextBox.ForeColor = SystemColors.WindowText
         LogTextBox.Location = New Point(0, 0)
-        LogTextBox.Multiline = True
         LogTextBox.Name = "LogTextBox"
         LogTextBox.ReadOnly = True
-        LogTextBox.ScrollBars = ScrollBars.Both
         LogTextBox.Size = New Size(1064, 598)
         LogTextBox.TabIndex = 0
-        LogTextBox.WordWrap = False
+        LogTextBox.Text = ""
         ' 
         ' LogWindow
         ' 
@@ -52,8 +48,7 @@ Partial Class LogWindow
         Name = "LogWindow"
         Text = "Log"
         ResumeLayout(False)
-        PerformLayout()
     End Sub
 
-    Friend WithEvents LogTextBox As TextBox
+    Friend WithEvents LogTextBox As RichTextBox
 End Class
