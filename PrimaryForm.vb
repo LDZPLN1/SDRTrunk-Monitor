@@ -5,6 +5,7 @@
 
 Imports System.ComponentModel
 Imports System.IO
+Imports System.Linq.Expressions
 Imports System.Runtime.InteropServices
 Imports System.Timers
 
@@ -70,16 +71,19 @@ Public Class PrimaryForm
 
     ' MENU ITEM TO START SDRTRUNK
     Private Sub StartSDRTrunkToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles StartMenuItem.Click
+        UpdateLog("USER INITIATED START", 1)
         StartSDRT()
     End Sub
 
     ' MENU ITEM TO STOP SDRTRUNK
     Private Sub StopSDRTrunkToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles StopMenuItem.Click
+        UpdateLog("USER INITIATED STOP", 1)
         StopSDRT()
     End Sub
 
     ' MENU ITEM TO RESTART SDRTRUNK
     Private Sub RestartSDRTrunkToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles RestartMenuItem.Click
+        UpdateLog("USER INITIATED RESTART", 1)
         StopSDRT()
         StartSDRT()
     End Sub
@@ -190,9 +194,10 @@ Public Class PrimaryForm
     Private Sub ReadStandardOutput(sender As Object, args As DataReceivedEventArgs)
         If args.Data IsNot Nothing Then
             If args.Data.Contains("Couldn't design final output low pass filter") Or args.Data.Contains("org.usb4java.LibUsbException") Or args.Data.Contains("java.lang.IllegalArgumentException") Or args.Data.Contains("throwing away samples") Then
-                Me.Invoke(Sub() UpdateLog(args.Data, True))
+                Me.Invoke(Sub() UpdateLog(args.Data, 2))
 
                 If Me.AutoRestartMenuItem.CheckState = CheckState.Checked Then
+                    Me.Invoke(Sub() UpdateLog("AUTO RESTART INITIATED", 2))
                     TrayNotifyIcon.BalloonTipText = "SDRTRunk Process Appears to Have Failed. Restarting"
                     TrayNotifyIcon.ShowBalloonTip(1)
                     Stall(2000)
@@ -206,26 +211,33 @@ Public Class PrimaryForm
                     End If
                 End If
             Else
-                Me.Invoke(Sub() UpdateLog(args.Data, False))
+                Me.Invoke(Sub() UpdateLog(args.Data, 0))
             End If
         End If
     End Sub
 
     ' UPDATE LOG WINDOW
-    Public Shared Sub UpdateLog(ltext As String, highlight As Boolean)
+    Public Shared Sub UpdateLog(ltext As String, highlight As Integer)
         Dim ltextfcolor As New ColorDialog()
         Dim ltextbcolor As New ColorDialog()
 
-        If highlight Then
+        If highlight > 0 Then
             ltextfcolor.Color = LogWindow.LogTextBox.SelectionColor
             ltextbcolor.Color = LogWindow.LogTextBox.SelectionBackColor
-            LogWindow.LogTextBox.SelectionColor = Color.White
-            LogWindow.LogTextBox.SelectionBackColor = Color.DarkRed
+
+            Select Case highlight
+                Case 1
+                    LogWindow.LogTextBox.SelectionColor = Color.White
+                    LogWindow.LogTextBox.SelectionBackColor = Color.DarkGreen
+                Case 2
+                    LogWindow.LogTextBox.SelectionColor = Color.White
+                    LogWindow.LogTextBox.SelectionBackColor = Color.DarkRed
+            End Select
         End If
 
         LogWindow.LogTextBox.AppendText(ltext & System.Environment.NewLine)
 
-        If highlight Then
+        If highlight > 0 Then
             LogWindow.LogTextBox.SelectionColor = ltextfcolor.Color
             LogWindow.LogTextBox.SelectionBackColor = ltextbcolor.Color
         End If
@@ -237,6 +249,7 @@ Public Class PrimaryForm
     Private Sub TimerElapsed(ByVal sender As Object, ByVal e As ElapsedEventArgs)
         If SDRTState() = 0 Then
             If Me.AutoRestartMenuItem.CheckState = CheckState.Checked Then
+                Me.Invoke(Sub() UpdateLog("AUTO RESTART INITIATED", 2))
                 TrayNotifyIcon.BalloonTipText = "SDRTRunk Process has Exited. Restarting"
                 TrayNotifyIcon.ShowBalloonTip(1)
                 Stall(2000)
