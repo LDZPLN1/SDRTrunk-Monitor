@@ -35,6 +35,8 @@ Partial Class PrimaryForm
         SettingsMenuItem = New ToolStripMenuItem()
         AutoRestartMenuItem = New ToolStripMenuItem()
         ToolStripSeparator1 = New ToolStripSeparator()
+        AboutMenuItem = New ToolStripMenuItem()
+        ToolStripSeparator4 = New ToolStripSeparator()
         ExitMenuItem = New ToolStripMenuItem()
         TrayMenu.SuspendLayout()
         SuspendLayout()
@@ -50,9 +52,9 @@ Partial Class PrimaryForm
         ' 
         ' TrayMenu
         ' 
-        TrayMenu.Items.AddRange(New ToolStripItem() {StartMenuItem, StopMenuItem, RestartMenuItem, ToolStripSeparator3, ViewLogMenuItem, ToolStripSeparator2, SettingsMenuItem, AutoRestartMenuItem, ToolStripSeparator1, ExitMenuItem})
+        TrayMenu.Items.AddRange(New ToolStripItem() {StartMenuItem, StopMenuItem, RestartMenuItem, ToolStripSeparator3, ViewLogMenuItem, ToolStripSeparator2, SettingsMenuItem, AutoRestartMenuItem, ToolStripSeparator1, AboutMenuItem, ToolStripSeparator4, ExitMenuItem})
         TrayMenu.Name = "TrayMenu"
-        TrayMenu.Size = New Size(181, 198)
+        TrayMenu.Size = New Size(181, 226)
         ' 
         ' StartMenuItem
         ' 
@@ -111,6 +113,17 @@ Partial Class PrimaryForm
         ToolStripSeparator1.Name = "ToolStripSeparator1"
         ToolStripSeparator1.Size = New Size(177, 6)
         ' 
+        ' AboutMenuItem
+        ' 
+        AboutMenuItem.Name = "AboutMenuItem"
+        AboutMenuItem.Size = New Size(180, 22)
+        AboutMenuItem.Text = "About"
+        ' 
+        ' ToolStripSeparator4
+        ' 
+        ToolStripSeparator4.Name = "ToolStripSeparator4"
+        ToolStripSeparator4.Size = New Size(177, 6)
+        ' 
         ' ExitMenuItem
         ' 
         ExitMenuItem.Image = CType(resources.GetObject("ExitMenuItem.Image"), Image)
@@ -144,4 +157,6 @@ Partial Class PrimaryForm
     Friend WithEvents StopMenuItem As ToolStripMenuItem
     Friend WithEvents RestartMenuItem As ToolStripMenuItem
     Friend WithEvents ToolStripSeparator3 As ToolStripSeparator
+    Friend WithEvents AboutMenuItem As ToolStripMenuItem
+    Friend WithEvents ToolStripSeparator4 As ToolStripSeparator
 End Class

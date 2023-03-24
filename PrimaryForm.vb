@@ -96,6 +96,11 @@ Public Class PrimaryForm
         My.Settings.Save()
     End Sub
 
+    ' MENU ITEM TO SHOW ABOUT FORM
+    Private Sub AboutMenuItem_Click(sender As Object, e As EventArgs) Handles AboutMenuItem.Click
+        About.Show()
+    End Sub
+
     ' MENU ITEM TO EXIT APPLICATION
     Private Sub ExitToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ExitMenuItem.Click
         Me.TrayNotifyIcon.Visible = False
