@@ -115,6 +115,7 @@ Partial Class PrimaryForm
         ' 
         ' AboutMenuItem
         ' 
+        AboutMenuItem.Image = CType(resources.GetObject("AboutMenuItem.Image"), Image)
         AboutMenuItem.Name = "AboutMenuItem"
         AboutMenuItem.Size = New Size(180, 22)
         AboutMenuItem.Text = "About"
