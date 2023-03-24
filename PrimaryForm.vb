@@ -1,4 +1,4 @@
-﻿' APP ICONS FROM THE OXYGEN TEAMM
+﻿' APP ICONS FROM THE OXYGEN TEAM
 
 ' https://www.iconarchive.com/show/oxygen-icons-by-oxygen-icons.org.html
 ' https://github.com/KDE/oxygen-icons
