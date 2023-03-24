@@ -1,4 +1,9 @@
-﻿Imports System.ComponentModel
+﻿' APP ICONS FROM THE OXYGEN TEAMM
+
+' https://www.iconarchive.com/show/oxygen-icons-by-oxygen-icons.org.html
+' https://github.com/KDE/oxygen-icons
+
+Imports System.ComponentModel
 Imports System.IO
 Imports System.Runtime.InteropServices
 Imports System.Timers
