@@ -35,6 +35,7 @@ Partial Class LogWindow
         LogTextBox.Size = New Size(1064, 598)
         LogTextBox.TabIndex = 0
         LogTextBox.Text = ""
+        LogTextBox.WordWrap = False
         ' 
         ' LogWindow
         ' 

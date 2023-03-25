@@ -1,14 +1,12 @@
-﻿' APP ICONS FROM THE OXYGEN TEAM
+﻿' APP ICONS TAKEN FROM
 
 ' https://www.iconarchive.com/show/oxygen-icons-by-oxygen-icons.org.html
 ' https://github.com/KDE/oxygen-icons
 
 Imports System.ComponentModel
 Imports System.IO
-Imports System.Linq.Expressions
 Imports System.Runtime.InteropServices
 Imports System.Timers
-
 
 Public Class PrimaryForm
     Private oMutex As System.Threading.Mutex
@@ -71,19 +69,19 @@ Public Class PrimaryForm
 
     ' MENU ITEM TO START SDRTRUNK
     Private Sub StartSDRTrunkToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles StartMenuItem.Click
-        UpdateLog("USER INITIATED START", 1)
+        UpdateLog(Environment.NewLine & "USER INITIATED START" & Environment.NewLine, 1)
         StartSDRT()
     End Sub
 
     ' MENU ITEM TO STOP SDRTRUNK
     Private Sub StopSDRTrunkToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles StopMenuItem.Click
-        UpdateLog("USER INITIATED STOP", 1)
+        UpdateLog(Environment.NewLine & "USER INITIATED STOP" & Environment.NewLine, 1)
         StopSDRT()
     End Sub
 
     ' MENU ITEM TO RESTART SDRTRUNK
     Private Sub RestartSDRTrunkToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles RestartMenuItem.Click
-        UpdateLog("USER INITIATED RESTART", 1)
+        UpdateLog(Environment.NewLine & "USER INITIATED RESTART" & Environment.NewLine, 1)
         StopSDRT()
         StartSDRT()
     End Sub
@@ -197,7 +195,7 @@ Public Class PrimaryForm
                 Me.Invoke(Sub() UpdateLog(args.Data, 2))
 
                 If Me.AutoRestartMenuItem.CheckState = CheckState.Checked Then
-                    Me.Invoke(Sub() UpdateLog("AUTO RESTART INITIATED", 2))
+                    Me.Invoke(Sub() UpdateLog(Environment.NewLine & "AUTO RESTART INITIATED" & Environment.NewLine, 3))
                     TrayNotifyIcon.BalloonTipText = "SDRTRunk Process Appears to Have Failed. Restarting"
                     TrayNotifyIcon.ShowBalloonTip(1)
                     Stall(2000)
@@ -230,6 +228,8 @@ Public Class PrimaryForm
                     LogWindow.LogTextBox.SelectionColor = Color.White
                     LogWindow.LogTextBox.SelectionBackColor = Color.DarkGreen
                 Case 2
+                    LogWindow.LogTextBox.SelectionBackColor = Color.Orange
+                Case 3
                     LogWindow.LogTextBox.SelectionColor = Color.White
                     LogWindow.LogTextBox.SelectionBackColor = Color.DarkRed
             End Select
@@ -249,7 +249,7 @@ Public Class PrimaryForm
     Private Sub TimerElapsed(ByVal sender As Object, ByVal e As ElapsedEventArgs)
         If SDRTState() = 0 Then
             If Me.AutoRestartMenuItem.CheckState = CheckState.Checked Then
-                Me.Invoke(Sub() UpdateLog("AUTO RESTART INITIATED", 2))
+                Me.Invoke(Sub() UpdateLog(Environment.NewLine & "AUTO RESTART INITIATED" & Environment.NewLine, 3))
                 TrayNotifyIcon.BalloonTipText = "SDRTRunk Process has Exited. Restarting"
                 TrayNotifyIcon.ShowBalloonTip(1)
                 Stall(2000)
