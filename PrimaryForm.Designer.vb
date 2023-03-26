@@ -54,82 +54,82 @@ Partial Class PrimaryForm
         ' 
         TrayMenu.Items.AddRange(New ToolStripItem() {StartMenuItem, StopMenuItem, RestartMenuItem, ToolStripSeparator3, ViewLogMenuItem, ToolStripSeparator2, SettingsMenuItem, AutoRestartMenuItem, ToolStripSeparator1, AboutMenuItem, ToolStripSeparator4, ExitMenuItem})
         TrayMenu.Name = "TrayMenu"
-        TrayMenu.Size = New Size(181, 226)
+        TrayMenu.Size = New Size(163, 204)
         ' 
         ' StartMenuItem
         ' 
         StartMenuItem.Image = CType(resources.GetObject("StartMenuItem.Image"), Image)
         StartMenuItem.Name = "StartMenuItem"
-        StartMenuItem.Size = New Size(180, 22)
+        StartMenuItem.Size = New Size(162, 22)
         StartMenuItem.Text = "Start SDRTrunk"
         ' 
         ' StopMenuItem
         ' 
         StopMenuItem.Image = CType(resources.GetObject("StopMenuItem.Image"), Image)
         StopMenuItem.Name = "StopMenuItem"
-        StopMenuItem.Size = New Size(180, 22)
+        StopMenuItem.Size = New Size(162, 22)
         StopMenuItem.Text = "Stop SDRTrunk"
         ' 
         ' RestartMenuItem
         ' 
         RestartMenuItem.Image = CType(resources.GetObject("RestartMenuItem.Image"), Image)
         RestartMenuItem.Name = "RestartMenuItem"
-        RestartMenuItem.Size = New Size(180, 22)
+        RestartMenuItem.Size = New Size(162, 22)
         RestartMenuItem.Text = "Restart SDRTrunk"
         ' 
         ' ToolStripSeparator3
         ' 
         ToolStripSeparator3.Name = "ToolStripSeparator3"
-        ToolStripSeparator3.Size = New Size(177, 6)
+        ToolStripSeparator3.Size = New Size(159, 6)
         ' 
         ' ViewLogMenuItem
         ' 
         ViewLogMenuItem.Image = CType(resources.GetObject("ViewLogMenuItem.Image"), Image)
         ViewLogMenuItem.Name = "ViewLogMenuItem"
-        ViewLogMenuItem.Size = New Size(180, 22)
+        ViewLogMenuItem.Size = New Size(162, 22)
         ViewLogMenuItem.Text = "View Log"
         ' 
         ' ToolStripSeparator2
         ' 
         ToolStripSeparator2.Name = "ToolStripSeparator2"
-        ToolStripSeparator2.Size = New Size(177, 6)
+        ToolStripSeparator2.Size = New Size(159, 6)
         ' 
         ' SettingsMenuItem
         ' 
         SettingsMenuItem.Image = CType(resources.GetObject("SettingsMenuItem.Image"), Image)
         SettingsMenuItem.Name = "SettingsMenuItem"
-        SettingsMenuItem.Size = New Size(180, 22)
+        SettingsMenuItem.Size = New Size(162, 22)
         SettingsMenuItem.Text = "Settings"
         ' 
         ' AutoRestartMenuItem
         ' 
         AutoRestartMenuItem.CheckOnClick = True
         AutoRestartMenuItem.Name = "AutoRestartMenuItem"
-        AutoRestartMenuItem.Size = New Size(180, 22)
+        AutoRestartMenuItem.Size = New Size(162, 22)
         AutoRestartMenuItem.Text = "Auto Restart"
         ' 
         ' ToolStripSeparator1
         ' 
         ToolStripSeparator1.Name = "ToolStripSeparator1"
-        ToolStripSeparator1.Size = New Size(177, 6)
+        ToolStripSeparator1.Size = New Size(159, 6)
         ' 
         ' AboutMenuItem
         ' 
         AboutMenuItem.Image = CType(resources.GetObject("AboutMenuItem.Image"), Image)
         AboutMenuItem.Name = "AboutMenuItem"
-        AboutMenuItem.Size = New Size(180, 22)
+        AboutMenuItem.Size = New Size(162, 22)
         AboutMenuItem.Text = "About"
         ' 
         ' ToolStripSeparator4
         ' 
         ToolStripSeparator4.Name = "ToolStripSeparator4"
-        ToolStripSeparator4.Size = New Size(177, 6)
+        ToolStripSeparator4.Size = New Size(159, 6)
         ' 
         ' ExitMenuItem
         ' 
         ExitMenuItem.Image = CType(resources.GetObject("ExitMenuItem.Image"), Image)
         ExitMenuItem.Name = "ExitMenuItem"
-        ExitMenuItem.Size = New Size(180, 22)
+        ExitMenuItem.Size = New Size(162, 22)
         ExitMenuItem.Text = "Exit"
         ' 
         ' PrimaryForm

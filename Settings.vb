@@ -59,14 +59,14 @@ Public Class SettingsForm
             PrimaryForm.pchecktimer.Stop()
             PrimaryForm.pchecktimer.Interval = My.Settings.Watchdog * 1000
             PrimaryForm.pchecktimer.Start()
-            Me.Close()
+            Close()
         End If
     End Sub
 
     ' CANCEL AND CLOSE FORM
     Private Sub CancelButton_Click(sender As Object, e As EventArgs) Handles CancelSetButton.Click, CancelSetButton.Click
         AutoValidate = AutoValidate.Disable
-        Me.Close()
+        Close()
     End Sub
 
     ' VALIDATE POLL TIMER SETTING IS AN INTEGER AND WITHIN RANGE

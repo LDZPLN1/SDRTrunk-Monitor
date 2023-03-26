@@ -6,65 +6,66 @@
 Imports System.ComponentModel
 Imports System.IO
 Imports System.Runtime.InteropServices
+Imports System.Threading
 Imports System.Timers
 
 Public Class PrimaryForm
-    Private oMutex As System.Threading.Mutex
+    Private oMutex As Mutex
     Private Shared sdrprocid As Integer = 0
     Private Shared ReadOnly sdrproc As New Process()
     Private Shared ignorefuture As Boolean = False
 
-    Public pchecktimer As New Timer(60000)
+    Public pchecktimer As New Timers.Timer(60000)
 
     ' VALIDATE SETTINGS AND START WATCHDOG TIMER
     Private Sub PrimaryForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        oMutex = New System.Threading.Mutex(False, "SDRTrunk Monitor")
+        oMutex = New Mutex(False, "SDRTrunk Monitor")
 
-        If oMutex.WaitOne(0, False) = False Then
+        If oMutex.WaitOne(0, False) <> False Then
+            AddHandler sdrproc.OutputDataReceived, AddressOf ReadStandardOutput
+            AddHandler pchecktimer.Elapsed, New ElapsedEventHandler(AddressOf TimerElapsed)
+
+            If My.Settings.Watchdog < 5 Or My.Settings.Watchdog > 3600 Then My.Settings.Watchdog = 60
+
+            Do Until File.Exists(My.Settings.SDRTPath & "\bin\sdr-trunk.bat")
+                Dim result As DialogResult = MessageBox.Show("Unable to locate SDRTrunk. Update settings?", "SDRTrunk Not Found", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
+
+                If result = DialogResult.Yes Then
+                    SettingsForm.ShowDialog()
+                Else
+                    End
+                End If
+            Loop
+
+            AutoRestartMenuItem.Checked = My.Settings.AutoRestart
+            pchecktimer.Interval = My.Settings.Watchdog * 1000
+            pchecktimer.Start()
+            pchecktimer.Enabled = False
+        Else
             oMutex.Close()
             oMutex = Nothing
             End
         End If
-
-        AddHandler sdrproc.OutputDataReceived, AddressOf ReadStandardOutput
-        AddHandler pchecktimer.Elapsed, New ElapsedEventHandler(AddressOf TimerElapsed)
-
-        If My.Settings.Watchdog < 5 Or My.Settings.Watchdog > 3600 Then My.Settings.Watchdog = 60
-
-        Do Until File.Exists(My.Settings.SDRTPath & "\bin\sdr-trunk.bat")
-            Dim result As DialogResult = MessageBox.Show("Unable to locate SDRTrunk. Update settings?", "SDRTrunk Not Found", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
-
-            If result = DialogResult.Yes Then
-                SettingsForm.ShowDialog()
-            Else
-                End
-            End If
-        Loop
-
-        Me.AutoRestartMenuItem.Checked = My.Settings.AutoRestart
-        pchecktimer.Interval = My.Settings.Watchdog * 1000
-        pchecktimer.Start()
-        pchecktimer.Enabled = False
     End Sub
 
     ' ENABLE/DISABLE MENU ITEMS BASED ON PROCESS STATE
     Private Sub TrayMenu_Opening(sender As Object, e As CancelEventArgs) Handles TrayMenu.Opening
         Select Case SDRTState()
             Case 0
-                Me.StartMenuItem.Enabled = True
-                Me.StopMenuItem.Enabled = False
-                Me.RestartMenuItem.Enabled = False
+                StartMenuItem.Enabled = True
+                StopMenuItem.Enabled = False
+                RestartMenuItem.Enabled = False
             Case 1
-                Me.StartMenuItem.Enabled = False
-                Me.StopMenuItem.Enabled = True
-                Me.RestartMenuItem.Enabled = True
+                StartMenuItem.Enabled = False
+                StopMenuItem.Enabled = True
+                RestartMenuItem.Enabled = True
             Case 2
-                Me.StartMenuItem.Enabled = False
-                Me.StopMenuItem.Enabled = False
-                Me.RestartMenuItem.Enabled = False
+                StartMenuItem.Enabled = False
+                StopMenuItem.Enabled = False
+                RestartMenuItem.Enabled = False
         End Select
 
-        Me.ViewLogMenuItem.Enabled = Not LogWindow.Visible
+        ViewLogMenuItem.Enabled = Not LogWindow.Visible
     End Sub
 
     ' MENU ITEM TO START SDRTRUNK
@@ -110,14 +111,14 @@ Public Class PrimaryForm
 
     ' MENU ITEM TO EXIT APPLICATION
     Private Sub ExitToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ExitMenuItem.Click
-        Me.TrayNotifyIcon.Visible = False
-        Me.Close()
+        TrayNotifyIcon.Visible = False
+        Close()
     End Sub
 
     ' START SDRTRUNK IN A NEW PROCESS AND REDIRECT STANDARD OUTPUT TO ASYNC OUTPUT HANDLER
     Private Sub StartSDRT()
-        If Me.InvokeRequired Then
-            Me.Invoke(Sub() StartSDRT())
+        If InvokeRequired Then
+            Invoke(Sub() StartSDRT())
         Else
             If sdrprocid <> 0 Then
                 sdrproc.CancelOutputRead()
@@ -128,11 +129,12 @@ Public Class PrimaryForm
             sdrproc.StartInfo.RedirectStandardOutput = True
             sdrproc.StartInfo.FileName = My.Settings.SDRTPath & "\bin\java.exe"
 
-            If My.Settings.SDRTVersion = "0.5.x" Then
-                sdrproc.StartInfo.Arguments = "--add-exports=javafx.base/com.sun.javafx.event=ALL-UNNAMED --add-modules=jdk.incubator.vector --add-exports=java.desktop/com.sun.java.swing.plaf.windows=ALL-UNNAMED -classpath """ & My.Settings.SDRTPath & "\lib\*"" io.github.dsheirer.gui.SDRTrunk"
-            ElseIf My.Settings.SDRTVersion = "0.6.x" Then
-                sdrproc.StartInfo.Arguments = "--add-exports=javafx.base/com.sun.javafx.Event=ALL-UNNAMED --add-modules=jdk.incubator.vector --add-exports=java.desktop/com.sun.java.swing.plaf.windows=ALL-UNNAMED -classpath """ & My.Settings.SDRTPath & "\Lib\*"" --enable-preview --enable-native-access=ALL-UNNAMED ""-Djava.library.path=C:\Program Files\SDRplay\API\x64"" io.github.dsheirer.gui.SDRTrunk"
-            End If
+            Select Case My.Settings.SDRTVersion
+                Case "0.5.x"
+                    sdrproc.StartInfo.Arguments = "--add-exports=javafx.base/com.sun.javafx.event=ALL-UNNAMED --add-modules=jdk.incubator.vector --add-exports=java.desktop/com.sun.java.swing.plaf.windows=ALL-UNNAMED -classpath """ & My.Settings.SDRTPath & "\lib\*"" io.github.dsheirer.gui.SDRTrunk"
+                Case "0.6.x"
+                    sdrproc.StartInfo.Arguments = "--add-exports=javafx.base/com.sun.javafx.Event=ALL-UNNAMED --add-modules=jdk.incubator.vector --add-exports=java.desktop/com.sun.java.swing.plaf.windows=ALL-UNNAMED -classpath """ & My.Settings.SDRTPath & "\Lib\*"" --enable-preview --enable-native-access=ALL-UNNAMED ""-Djava.library.path=C:\Program Files\SDRplay\API\x64"" io.github.dsheirer.gui.SDRTrunk"
+            End Select
 
             sdrproc.Start()
             sdrprocid = sdrproc.Id
@@ -146,7 +148,7 @@ Public Class PrimaryForm
             Dim attempts As Integer = 0
 
             Do Until sprocrun = True
-                Threading.Thread.Sleep(50)
+                Thread.Sleep(50)
                 Application.DoEvents()
                 attempts += 1
                 proclist = Process.GetProcesses
@@ -159,7 +161,7 @@ Public Class PrimaryForm
                     End If
                 Next
 
-                If attempts = 40 Then sprocrun = True
+                If attempts = 60 Then sprocrun = True
             Loop
 
             LogWindow.Focus()
@@ -167,14 +169,15 @@ Public Class PrimaryForm
             ' ENABLE WATCHDOG TIMER
             ignorefuture = False
             pchecktimer.Enabled = True
+            TrayNotifyIcon.Text = "SDRTrunk Monitor" & Environment.NewLine & "Monitoring PID " & sdrprocid.ToString()
             Stall(500)
         End If
     End Sub
 
     ' STOP SDRTRUNK AND DISABLE WATCHDOG TIMER
     Private Sub StopSDRT()
-        If Me.InvokeRequired Then
-            Me.Invoke(Sub() StopSDRT())
+        If InvokeRequired Then
+            Invoke(Sub() StopSDRT())
         Else
             If sdrprocid <> 0 Then
                 pchecktimer.Enabled = False
@@ -183,6 +186,7 @@ Public Class PrimaryForm
                 sdrproc.Close()
                 sdrprocid = 0
                 LogWindow.Hide()
+                TrayNotifyIcon.Text = "SDRTrunk Monitor"
                 Stall(500)
             End If
         End If
@@ -192,10 +196,10 @@ Public Class PrimaryForm
     Private Sub ReadStandardOutput(sender As Object, args As DataReceivedEventArgs)
         If args.Data IsNot Nothing Then
             If args.Data.Contains("Couldn't design final output low pass filter") Or args.Data.Contains("org.usb4java.LibUsbException") Or args.Data.Contains("java.lang.IllegalArgumentException") Or args.Data.Contains("throwing away samples") Then
-                Me.Invoke(Sub() UpdateLog(args.Data, 2))
+                Invoke(Sub() UpdateLog(args.Data, 2))
 
-                If Me.AutoRestartMenuItem.CheckState = CheckState.Checked Then
-                    Me.Invoke(Sub() UpdateLog(Environment.NewLine & "AUTO RESTART INITIATED" & Environment.NewLine, 3))
+                If AutoRestartMenuItem.CheckState = CheckState.Checked Then
+                    Invoke(Sub() UpdateLog(Environment.NewLine & "AUTO RESTART INITIATED" & Environment.NewLine, 3))
                     TrayNotifyIcon.BalloonTipText = "SDRTRunk Process Appears to Have Failed. Restarting"
                     TrayNotifyIcon.ShowBalloonTip(1)
                     Stall(2000)
@@ -209,7 +213,7 @@ Public Class PrimaryForm
                     End If
                 End If
             Else
-                Me.Invoke(Sub() UpdateLog(args.Data, 0))
+                Invoke(Sub() UpdateLog(args.Data, 0))
             End If
         End If
     End Sub
@@ -235,7 +239,7 @@ Public Class PrimaryForm
             End Select
         End If
 
-        LogWindow.LogTextBox.AppendText(ltext & System.Environment.NewLine)
+        LogWindow.LogTextBox.AppendText(ltext & Environment.NewLine)
 
         If highlight > 0 Then
             LogWindow.LogTextBox.SelectionColor = ltextfcolor.Color
@@ -248,8 +252,8 @@ Public Class PrimaryForm
     ' CHECK PROCESS STATUS WHEN WATCHDOG TIMER FIRES
     Private Sub TimerElapsed(ByVal sender As Object, ByVal e As ElapsedEventArgs)
         If SDRTState() = 0 Then
-            If Me.AutoRestartMenuItem.CheckState = CheckState.Checked Then
-                Me.Invoke(Sub() UpdateLog(Environment.NewLine & "AUTO RESTART INITIATED" & Environment.NewLine, 3))
+            If AutoRestartMenuItem.CheckState = CheckState.Checked Then
+                Invoke(Sub() UpdateLog(Environment.NewLine & "AUTO RESTART INITIATED" & Environment.NewLine, 3))
                 TrayNotifyIcon.BalloonTipText = "SDRTRunk Process has Exited. Restarting"
                 TrayNotifyIcon.ShowBalloonTip(1)
                 Stall(2000)
@@ -262,7 +266,7 @@ Public Class PrimaryForm
                 sdrproc.CancelOutputRead()
                 sdrproc.Close()
                 sdrprocid = 0
-                Me.Invoke(Sub() HideLog())
+                Invoke(Sub() HideLog())
             End If
         End If
     End Sub
@@ -275,13 +279,13 @@ Public Class PrimaryForm
         Dim sloops As Integer = Int(stime / 50)
 
         For tloop As Integer = 1 To sloops
-            Threading.Thread.Sleep(50)
+            Thread.Sleep(50)
             Application.DoEvents()
         Next
     End Sub
 
     <DllImport("User32.dll", EntryPoint:="ShowWindow", SetLastError:=True)>
-    Private Shared Function SetWindow(ByVal hWnd As IntPtr, nShowCmd As Integer) As Boolean
+    Private Shared Function SetWindow(hWnd As IntPtr, nShowCmd As Integer) As Boolean
     End Function
 
     ' RETURN SDRTRUNK PROCESS STATE
@@ -295,12 +299,7 @@ Public Class PrimaryForm
 
         For Each sproc As Process In proclist
             If sproc.MainModule.FileName = My.Settings.SDRTPath & "\bin\java.exe" Then
-                If sproc.Id = sdrprocid Then
-                    SDRTState = 1
-                Else
-                    SDRTState = 2
-                End If
-
+                SDRTState = If(sproc.Id = sdrprocid, 1, 2)
                 Exit For
             End If
         Next
