@@ -101,6 +101,30 @@ Namespace My
                 Me("AutoRestart") = value
             End Set
         End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("False")>  _
+        Public Property RunExternal() As Boolean
+            Get
+                Return CType(Me("RunExternal"),Boolean)
+            End Get
+            Set
+                Me("RunExternal") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("")>  _
+        Public Property ExternalCommand() As String
+            Get
+                Return CType(Me("ExternalCommand"),String)
+            End Get
+            Set
+                Me("ExternalCommand") = value
+            End Set
+        End Property
     End Class
 End Namespace
 

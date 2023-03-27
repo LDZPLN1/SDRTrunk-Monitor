@@ -6,7 +6,6 @@ Public Class SettingsForm
     ' SHOW CURRENT SETTINGS
     Private Sub SettingsForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         SDRTPathTextBox.Text = My.Settings.SDRTPath
-        PollTimerTextBox.Text = My.Settings.Watchdog
 
         Select Case My.Settings.SDRTVersion
             Case "0.5.x"
@@ -17,6 +16,9 @@ Public Class SettingsForm
                 V5RadioButton.Checked = False
                 V6RadioButton.Checked = False
         End Select
+
+        ExtCommandTextBox.Text = My.Settings.ExternalCommand
+        PollTimerTextBox.Text = My.Settings.Watchdog
     End Sub
 
     ' SELECT DIRECTORY AND VALIDATE
@@ -52,9 +54,18 @@ Public Class SettingsForm
             End If
 
             My.Settings.SDRTPath = SDRTPathTextBox.Text
+            My.Settings.ExternalCommand = ExtCommandTextBox.Text
             My.Settings.Watchdog = PollTimerTextBox.Text
 
             My.Settings.Save()
+
+            If My.Settings.ExternalCommand <> String.Empty Then
+                PrimaryForm.RunExternalMenuItem.Checked = My.Settings.RunExternal
+                PrimaryForm.RunExternalMenuItem.Enabled = True
+            Else
+                PrimaryForm.RunExternalMenuItem.Checked = False
+                PrimaryForm.RunExternalMenuItem.Enabled = False
+            End If
 
             PrimaryForm.pchecktimer.Stop()
             PrimaryForm.pchecktimer.Interval = My.Settings.Watchdog * 1000

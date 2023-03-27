@@ -7,15 +7,15 @@
     <StartupObject>SDRTrunk_Monitor.PrimaryForm</StartupObject>
     <UseWindowsForms>true</UseWindowsForms>
     <MyType>WindowsForms</MyType>
-    <ApplicationIcon>appmonitor.ico</ApplicationIcon>
+    <ApplicationIcon>images\system_run.ico</ApplicationIcon>
     <Title>SDRTrunk Monitor</Title>
     <Copyright>Copyright © 2023 Douglas Graham, All Rights Reserved</Copyright>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <Version>1.0.10</Version>
+    <Version>1.1.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="appmonitor.ico" />
+    <Content Include="images\system_run.ico" />
   </ItemGroup>
 
   <ItemGroup>

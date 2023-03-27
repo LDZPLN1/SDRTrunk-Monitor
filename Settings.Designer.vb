@@ -24,7 +24,7 @@ Partial Class SettingsForm
     Private Sub InitializeComponent()
         components = New ComponentModel.Container()
         Dim resources As ComponentModel.ComponentResourceManager = New ComponentModel.ComponentResourceManager(GetType(SettingsForm))
-        PathLabel = New Label()
+        SDRTPathLabel = New Label()
         SaveButton = New Button()
         CancelSetButton = New Button()
         SDRTPathTextBox = New TextBox()
@@ -36,21 +36,23 @@ Partial Class SettingsForm
         SDRTFolderDialog = New FolderBrowserDialog()
         SelectDirButton = New Button()
         SettingsToolTip = New ToolTip(components)
+        ExtCommandTextBox = New TextBox()
+        ExtCommandLabel = New Label()
         VersionGroupBox.SuspendLayout()
         SuspendLayout()
         ' 
-        ' PathLabel
+        ' SDRTPathLabel
         ' 
-        PathLabel.AutoSize = True
-        PathLabel.Location = New Point(12, 28)
-        PathLabel.Name = "PathLabel"
-        PathLabel.Size = New Size(86, 15)
-        PathLabel.TabIndex = 0
-        PathLabel.Text = "SDRTrunk Path:"
+        SDRTPathLabel.AutoSize = True
+        SDRTPathLabel.Location = New Point(12, 15)
+        SDRTPathLabel.Name = "SDRTPathLabel"
+        SDRTPathLabel.Size = New Size(86, 15)
+        SDRTPathLabel.TabIndex = 0
+        SDRTPathLabel.Text = "SDRTrunk Path:"
         ' 
         ' SaveButton
         ' 
-        SaveButton.Location = New Point(445, 82)
+        SaveButton.Location = New Point(278, 99)
         SaveButton.Name = "SaveButton"
         SaveButton.Size = New Size(75, 23)
         SaveButton.TabIndex = 6
@@ -61,7 +63,7 @@ Partial Class SettingsForm
         ' 
         CancelSetButton.CausesValidation = False
         CancelSetButton.DialogResult = DialogResult.Cancel
-        CancelSetButton.Location = New Point(526, 82)
+        CancelSetButton.Location = New Point(367, 99)
         CancelSetButton.Name = "CancelSetButton"
         CancelSetButton.Size = New Size(75, 23)
         CancelSetButton.TabIndex = 7
@@ -70,18 +72,19 @@ Partial Class SettingsForm
         ' 
         ' SDRTPathTextBox
         ' 
-        SDRTPathTextBox.Location = New Point(110, 24)
+        SDRTPathTextBox.Location = New Point(130, 12)
         SDRTPathTextBox.Name = "SDRTPathTextBox"
-        SDRTPathTextBox.Size = New Size(277, 23)
+        SDRTPathTextBox.Size = New Size(397, 23)
         SDRTPathTextBox.TabIndex = 1
+        SettingsToolTip.SetToolTip(SDRTPathTextBox, "Path to SDRTrunk Base Directory")
         ' 
         ' VersionGroupBox
         ' 
         VersionGroupBox.Controls.Add(V6RadioButton)
         VersionGroupBox.Controls.Add(V5RadioButton)
-        VersionGroupBox.Location = New Point(478, 6)
+        VersionGroupBox.Location = New Point(570, 12)
         VersionGroupBox.Name = "VersionGroupBox"
-        VersionGroupBox.Size = New Size(123, 53)
+        VersionGroupBox.Size = New Size(122, 81)
         VersionGroupBox.TabIndex = 3
         VersionGroupBox.TabStop = False
         VersionGroupBox.Text = "SDRTrunk Version"
@@ -89,7 +92,7 @@ Partial Class SettingsForm
         ' V6RadioButton
         ' 
         V6RadioButton.AutoSize = True
-        V6RadioButton.Location = New Point(67, 22)
+        V6RadioButton.Location = New Point(6, 47)
         V6RadioButton.Name = "V6RadioButton"
         V6RadioButton.Size = New Size(55, 19)
         V6RadioButton.TabIndex = 1
@@ -111,7 +114,7 @@ Partial Class SettingsForm
         ' TimerLabel
         ' 
         TimerLabel.AutoSize = True
-        TimerLabel.Location = New Point(12, 56)
+        TimerLabel.Location = New Point(12, 73)
         TimerLabel.Name = "TimerLabel"
         TimerLabel.Size = New Size(92, 15)
         TimerLabel.TabIndex = 5
@@ -119,10 +122,11 @@ Partial Class SettingsForm
         ' 
         ' PollTimerTextBox
         ' 
-        PollTimerTextBox.Location = New Point(110, 53)
+        PollTimerTextBox.Location = New Point(130, 70)
         PollTimerTextBox.Name = "PollTimerTextBox"
         PollTimerTextBox.Size = New Size(67, 23)
-        PollTimerTextBox.TabIndex = 4
+        PollTimerTextBox.TabIndex = 5
+        SettingsToolTip.SetToolTip(PollTimerTextBox, "Watchdog Timer in Seconds")
         ' 
         ' SDRTFolderDialog
         ' 
@@ -132,19 +136,39 @@ Partial Class SettingsForm
         ' 
         ' SelectDirButton
         ' 
-        SelectDirButton.Location = New Point(393, 24)
+        SelectDirButton.Image = CType(resources.GetObject("SelectDirButton.Image"), Image)
+        SelectDirButton.Location = New Point(533, 12)
         SelectDirButton.Name = "SelectDirButton"
-        SelectDirButton.Size = New Size(75, 23)
+        SelectDirButton.Size = New Size(23, 23)
         SelectDirButton.TabIndex = 2
-        SelectDirButton.Text = "Select"
         SelectDirButton.UseVisualStyleBackColor = True
+        ' 
+        ' ExtCommandTextBox
+        ' 
+        ExtCommandTextBox.Location = New Point(130, 41)
+        ExtCommandTextBox.Name = "ExtCommandTextBox"
+        ExtCommandTextBox.Size = New Size(426, 23)
+        ExtCommandTextBox.TabIndex = 4
+        SettingsToolTip.SetToolTip(ExtCommandTextBox, "External Command to be Executed Between Restarts")
+        ' 
+        ' ExtCommandLabel
+        ' 
+        ExtCommandLabel.AutoSize = True
+        ExtCommandLabel.Location = New Point(12, 44)
+        ExtCommandLabel.Name = "ExtCommandLabel"
+        ExtCommandLabel.Size = New Size(112, 15)
+        ExtCommandLabel.TabIndex = 8
+        ExtCommandLabel.Text = "External Command:"
         ' 
         ' SettingsForm
         ' 
+        AcceptButton = SaveButton
         AutoScaleDimensions = New SizeF(7F, 15F)
         AutoScaleMode = AutoScaleMode.Font
-        ClientSize = New Size(613, 111)
-        ControlBox = False
+        CancelButton = CancelSetButton
+        ClientSize = New Size(704, 131)
+        Controls.Add(ExtCommandTextBox)
+        Controls.Add(ExtCommandLabel)
         Controls.Add(SelectDirButton)
         Controls.Add(PollTimerTextBox)
         Controls.Add(TimerLabel)
@@ -152,9 +176,11 @@ Partial Class SettingsForm
         Controls.Add(SDRTPathTextBox)
         Controls.Add(CancelSetButton)
         Controls.Add(SaveButton)
-        Controls.Add(PathLabel)
+        Controls.Add(SDRTPathLabel)
         FormBorderStyle = FormBorderStyle.FixedDialog
         Icon = CType(resources.GetObject("$this.Icon"), Icon)
+        MaximizeBox = False
+        MinimizeBox = False
         Name = "SettingsForm"
         StartPosition = FormStartPosition.CenterScreen
         Text = "Settings"
@@ -164,7 +190,7 @@ Partial Class SettingsForm
         PerformLayout()
     End Sub
 
-    Friend WithEvents PathLabel As Label
+    Friend WithEvents SDRTPathLabel As Label
     Friend WithEvents SaveButton As Button
     Friend WithEvents CancelSetButton As Button
     Friend WithEvents VersionGroupBox As GroupBox
@@ -176,4 +202,6 @@ Partial Class SettingsForm
     Friend WithEvents SelectDirButton As Button
     Friend WithEvents SDRTPathTextBox As TextBox
     Friend WithEvents SettingsToolTip As ToolTip
+    Friend WithEvents ExtCommandTextBox As TextBox
+    Friend WithEvents ExtCommandLabel As Label
 End Class

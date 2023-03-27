@@ -1,9 +1,4 @@
-﻿' APP ICONS TAKEN FROM
-
-' https://www.iconarchive.com/show/oxygen-icons-by-oxygen-icons.org.html
-' https://github.com/KDE/oxygen-icons
-
-Imports System.ComponentModel
+﻿Imports System.ComponentModel
 Imports System.IO
 Imports System.Runtime.InteropServices
 Imports System.Threading
@@ -38,6 +33,13 @@ Public Class PrimaryForm
             Loop
 
             AutoRestartMenuItem.Checked = My.Settings.AutoRestart
+
+            If My.Settings.ExternalCommand <> String.Empty Then
+                RunExternalMenuItem.Checked = My.Settings.RunExternal
+            Else
+                RunExternalMenuItem.Enabled = False
+            End If
+
             pchecktimer.Interval = My.Settings.Watchdog * 1000
             pchecktimer.Start()
             pchecktimer.Enabled = False
@@ -84,6 +86,11 @@ Public Class PrimaryForm
     Private Sub RestartSDRTrunkToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles RestartMenuItem.Click
         UpdateLog(Environment.NewLine & "USER INITIATED RESTART" & Environment.NewLine, 1)
         StopSDRT()
+
+        If RunExternalMenuItem.Checked = True Then
+            ExecuteExternal()
+        End If
+
         StartSDRT()
     End Sub
 
@@ -101,6 +108,12 @@ Public Class PrimaryForm
     ' MENU ITEM TO TOGGLE AUTO RESTART
     Private Sub AutoRestartMenuItem_Click(sender As Object, e As EventArgs) Handles AutoRestartMenuItem.CheckedChanged
         My.Settings.AutoRestart = AutoRestartMenuItem.Checked
+        My.Settings.Save()
+    End Sub
+
+    ' MENU ITEM TO TOGGLE EXTERNAL COMMAND BETWEEN RESTARTS
+    Private Sub RunExternalMenuItem_Click(sender As Object, e As EventArgs) Handles RunExternalMenuItem.CheckedChanged
+        My.Settings.RunExternal = RunExternalMenuItem.Checked
         My.Settings.Save()
     End Sub
 
@@ -170,7 +183,6 @@ Public Class PrimaryForm
             ignorefuture = False
             pchecktimer.Enabled = True
             TrayNotifyIcon.Text = "SDRTrunk Monitor" & Environment.NewLine & "Monitoring PID " & sdrprocid.ToString()
-            Stall(500)
         End If
     End Sub
 
@@ -182,12 +194,17 @@ Public Class PrimaryForm
             If sdrprocid <> 0 Then
                 pchecktimer.Enabled = False
                 sdrproc.CancelOutputRead()
-                sdrproc.Kill()
+                sdrproc.CloseMainWindow()
+
+                Do Until sdrproc.HasExited
+                    Thread.Sleep(50)
+                    Application.DoEvents()
+                Loop
+
                 sdrproc.Close()
                 sdrprocid = 0
                 LogWindow.Hide()
                 TrayNotifyIcon.Text = "SDRTrunk Monitor"
-                Stall(500)
             End If
         End If
     End Sub
@@ -196,14 +213,16 @@ Public Class PrimaryForm
     Private Sub ReadStandardOutput(sender As Object, args As DataReceivedEventArgs)
         If args.Data IsNot Nothing Then
             If args.Data.Contains("Couldn't design final output low pass filter") Or args.Data.Contains("org.usb4java.LibUsbException") Or args.Data.Contains("java.lang.IllegalArgumentException") Or args.Data.Contains("throwing away samples") Then
-                Invoke(Sub() UpdateLog(args.Data, 2))
+                UpdateLog(args.Data, 2)
 
                 If AutoRestartMenuItem.CheckState = CheckState.Checked Then
-                    Invoke(Sub() UpdateLog(Environment.NewLine & "AUTO RESTART INITIATED" & Environment.NewLine, 3))
-                    TrayNotifyIcon.BalloonTipText = "SDRTRunk Process Appears to Have Failed. Restarting"
-                    TrayNotifyIcon.ShowBalloonTip(1)
-                    Stall(2000)
+                    UpdateLog(Environment.NewLine & "AUTO RESTART INITIATED" & Environment.NewLine, 3)
                     StopSDRT()
+
+                    If RunExternalMenuItem.Checked = True Then
+                        ExecuteExternal()
+                    End If
+
                     StartSDRT()
                 Else
                     If Not ignorefuture Then
@@ -213,50 +232,56 @@ Public Class PrimaryForm
                     End If
                 End If
             Else
-                Invoke(Sub() UpdateLog(args.Data, 0))
+                UpdateLog(args.Data, 0)
             End If
         End If
     End Sub
 
     ' UPDATE LOG WINDOW
-    Public Shared Sub UpdateLog(ltext As String, highlight As Integer)
-        Dim ltextfcolor As New ColorDialog()
-        Dim ltextbcolor As New ColorDialog()
+    Public Sub UpdateLog(ltext As String, highlight As Integer)
+        If InvokeRequired Then
+            Invoke(Sub() UpdateLog(ltext, highlight))
+        Else
+            Dim ltextfcolor As New ColorDialog()
+            Dim ltextbcolor As New ColorDialog()
 
-        If highlight > 0 Then
-            ltextfcolor.Color = LogWindow.LogTextBox.SelectionColor
-            ltextbcolor.Color = LogWindow.LogTextBox.SelectionBackColor
+            If highlight > 0 Then
+                ltextfcolor.Color = LogWindow.LogTextBox.SelectionColor
+                ltextbcolor.Color = LogWindow.LogTextBox.SelectionBackColor
 
-            Select Case highlight
-                Case 1
-                    LogWindow.LogTextBox.SelectionColor = Color.White
-                    LogWindow.LogTextBox.SelectionBackColor = Color.DarkGreen
-                Case 2
-                    LogWindow.LogTextBox.SelectionBackColor = Color.Orange
-                Case 3
-                    LogWindow.LogTextBox.SelectionColor = Color.White
-                    LogWindow.LogTextBox.SelectionBackColor = Color.DarkRed
-            End Select
+                Select Case highlight
+                    Case 1
+                        LogWindow.LogTextBox.SelectionColor = Color.White
+                        LogWindow.LogTextBox.SelectionBackColor = Color.DarkGreen
+                    Case 2
+                        LogWindow.LogTextBox.SelectionBackColor = Color.Orange
+                    Case 3
+                        LogWindow.LogTextBox.SelectionColor = Color.White
+                        LogWindow.LogTextBox.SelectionBackColor = Color.DarkRed
+                End Select
+            End If
+
+            LogWindow.LogTextBox.AppendText(ltext & Environment.NewLine)
+
+            If highlight > 0 Then
+                LogWindow.LogTextBox.SelectionColor = ltextfcolor.Color
+                LogWindow.LogTextBox.SelectionBackColor = ltextbcolor.Color
+            End If
+
+            LogWindow.Refresh()
         End If
-
-        LogWindow.LogTextBox.AppendText(ltext & Environment.NewLine)
-
-        If highlight > 0 Then
-            LogWindow.LogTextBox.SelectionColor = ltextfcolor.Color
-            LogWindow.LogTextBox.SelectionBackColor = ltextbcolor.Color
-        End If
-
-        LogWindow.Refresh()
     End Sub
 
     ' CHECK PROCESS STATUS WHEN WATCHDOG TIMER FIRES
     Private Sub TimerElapsed(ByVal sender As Object, ByVal e As ElapsedEventArgs)
         If SDRTState() = 0 Then
             If AutoRestartMenuItem.CheckState = CheckState.Checked Then
-                Invoke(Sub() UpdateLog(Environment.NewLine & "AUTO RESTART INITIATED" & Environment.NewLine, 3))
-                TrayNotifyIcon.BalloonTipText = "SDRTRunk Process has Exited. Restarting"
-                TrayNotifyIcon.ShowBalloonTip(1)
-                Stall(2000)
+                UpdateLog(Environment.NewLine & "AUTO RESTART INITIATED" & Environment.NewLine, 3)
+
+                If RunExternalMenuItem.Checked = True Then
+                    ExecuteExternal()
+                End If
+
                 StopSDRT()
                 StartSDRT()
             Else
@@ -275,13 +300,33 @@ Public Class PrimaryForm
         LogWindow.Hide()
     End Sub
 
-    Private Shared Sub Stall(stime As Integer)
-        Dim sloops As Integer = Int(stime / 50)
+    Private Sub ExecuteExternal()
+        UpdateLog("EXECUTING EXTERNAL COMMAND [" & My.Settings.ExternalCommand & "]" & Environment.NewLine, 1)
 
-        For tloop As Integer = 1 To sloops
-            Thread.Sleep(50)
-            Application.DoEvents()
-        Next
+        Dim extproc As New Process()
+        Dim splitloc = InStr(My.Settings.ExternalCommand, " ")
+        extproc.StartInfo.UseShellExecute = True
+        extproc.StartInfo.RedirectStandardOutput = False
+
+        If splitloc = 0 Then
+            extproc.StartInfo.FileName = My.Settings.ExternalCommand
+        Else
+            extproc.StartInfo.FileName = My.Settings.ExternalCommand.Substring(0, splitloc - 1)
+            extproc.StartInfo.Arguments = My.Settings.ExternalCommand.Substring(splitloc)
+        End If
+
+        Try
+            extproc.Start()
+
+            Do Until extproc.HasExited
+                Thread.Sleep(50)
+                Application.DoEvents()
+            Loop
+        Catch ex As Win32Exception
+            UpdateLog("EXTERNAL COMMAND FAILED TO EXECUTE" & Environment.NewLine, 3)
+        End Try
+
+        extproc.Close()
     End Sub
 
     <DllImport("User32.dll", EntryPoint:="ShowWindow", SetLastError:=True)>
