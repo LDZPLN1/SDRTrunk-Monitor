@@ -13,8 +13,8 @@ Settings Overview:
 * Poll Timer - How often the app polls the SDRTrunk process to verify it is still running.
 
 Toggle Menu Options:
-* Auto Restart - Force an automated restart of SDRTrunk if the process dies or an error is detected
-* External Command - Execute the external command specified in the Settings dialog in between restarts of SDRTrunk. It will not run between manual stop/starts. (In my use case,  this fires a Python script to update the SDRTrunk playlist.xml file with newly identified radio IDs from a discovery database before it restarts)
+* Auto Restart - Force an automated restart of SDRTrunk if the process dies or an error is detected. If this option is not checked, you will only receive a single tray notification when an error appears to have occurred or the process appears to have died
+* External Command - Execute the external command specified in the Settings dialog in between restarts of SDRTrunk. It will not run between manual stop/starts. If no external command has been set in the Settings dialog, this option will not be available. (In my use case,  this fires a Python script to update the SDRTrunk playlist.xml file with newly identified radio IDs from a discovery database before it restarts)
 
 I'm sure the code could be cleaner... but I do this for fun and in my spare time.
 
