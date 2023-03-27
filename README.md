@@ -14,7 +14,7 @@ Settings Overview:
 
 Toggle Menu Options:
 * Auto Restart - Force an automated restart of SDRTrunk if the process dies or an error is detected
-* External Command - Execute the external command specified in the Settings dialog in between restarts of SDRTrunk. It will not run between manual stop/starts. (In my use case,  this fires a Python script to update the SDRTrunk playlist.xml file with newly identified radio IDs from a discovery database)
+* External Command - Execute the external command specified in the Settings dialog in between restarts of SDRTrunk. It will not run between manual stop/starts. (In my use case,  this fires a Python script to update the SDRTrunk playlist.xml file with newly identified radio IDs from a discovery database before it restarts)
 
 I'm sure the code could be cleaner... but I do this for fun and in my spare time.
 
