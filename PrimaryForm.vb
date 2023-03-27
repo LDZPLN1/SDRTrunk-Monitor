@@ -196,9 +196,16 @@ Public Class PrimaryForm
                 sdrproc.CancelOutputRead()
                 sdrproc.CloseMainWindow()
 
+                Dim attempts As Integer = 0
+
                 Do Until sdrproc.HasExited
+                    attempts += 1
                     Thread.Sleep(50)
                     Application.DoEvents()
+
+                    If attempts = 100 Then
+                        sdrproc.Kill()
+                    End If
                 Loop
 
                 sdrproc.Close()
