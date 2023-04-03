@@ -67,9 +67,12 @@ Public Class SettingsForm
                 PrimaryForm.RunExternalMenuItem.Enabled = False
             End If
 
+            Dim tstate As Boolean = PrimaryForm.pchecktimer.Enabled
+
             PrimaryForm.pchecktimer.Stop()
             PrimaryForm.pchecktimer.Interval = My.Settings.Watchdog * 1000
             PrimaryForm.pchecktimer.Start()
+            PrimaryForm.pchecktimer.Enabled = tstate
             Close()
         End If
     End Sub
