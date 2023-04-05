@@ -5,7 +5,7 @@ VisualStudioVersion = 17.5.33502.453
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{778DAE3C-4631-46EA-AA77-85C1314464D9}") = "SDRTrunk Monitor", "SDRTrunk Monitor.vbproj", "{C22784EF-8BD9-4547-A30A-B312BC97788A}"
 EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "SDR Monitor Setup", "..\SDR Monitor Setup\SDR Monitor Setup.vdproj", "{74D0E258-628E-495D-BDB4-96B599EF8F69}"
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "SDRTrunk Monitor Setup", "..\SDRTrunk Monitor Setup\SDRTrunk Monitor Setup.vdproj", "{74D0E258-628E-495D-BDB4-96B599EF8F69}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

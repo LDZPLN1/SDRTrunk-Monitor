@@ -9,6 +9,7 @@ Public Class PrimaryForm
     Private Shared sdrprocid As Integer = 0
     Private Shared ReadOnly sdrproc As New Process()
     Private Shared ignorefuture As Boolean = False
+    Private Shared ActiveAppPath As String = String.Empty
 
     Public pchecktimer As New Timers.Timer(60000)
 
@@ -138,9 +139,10 @@ Public Class PrimaryForm
                 sdrproc.Close()
             End If
 
+            ActiveAppPath = My.Settings.SDRTPath
             sdrproc.StartInfo.UseShellExecute = False
             sdrproc.StartInfo.RedirectStandardOutput = True
-            sdrproc.StartInfo.FileName = My.Settings.SDRTPath & "\bin\java.exe"
+            sdrproc.StartInfo.FileName = ActiveAppPath & "\bin\java.exe"
 
             Select Case My.Settings.SDRTVersion
                 Case "0.5.x"
@@ -167,7 +169,7 @@ Public Class PrimaryForm
                 proclist = Process.GetProcesses
 
                 For Each sproc As Process In proclist
-                    If sproc.MainWindowTitle = My.Settings.SDRTPath & "\bin\java.exe" Then
+                    If sproc.MainWindowTitle = ActiveAppPath & "\bin\java.exe" Then
                         SetWindow(sproc.MainWindowHandle, 2)
                         sprocrun = True
                         Exit For
@@ -213,6 +215,8 @@ Public Class PrimaryForm
                 LogWindow.Hide()
                 TrayNotifyIcon.Text = "SDRTrunk Monitor"
             End If
+
+            ActiveAppPath = String.Empty
         End If
     End Sub
 
@@ -350,7 +354,7 @@ Public Class PrimaryForm
         Dim proclist As Process() = Process.GetProcessesByName("java")
 
         For Each sproc As Process In proclist
-            If sproc.MainModule.FileName = My.Settings.SDRTPath & "\bin\java.exe" Then
+            If sproc.MainModule.FileName = ActiveAppPath & "\bin\java.exe" Then
                 SDRTState = If(sproc.Id = sdrprocid, 1, 2)
                 Exit For
             End If
