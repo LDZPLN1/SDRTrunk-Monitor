@@ -148,7 +148,7 @@ Public Class PrimaryForm
                 Case "0.5.x"
                     sdrproc.StartInfo.Arguments = "--add-exports=javafx.base/com.sun.javafx.event=ALL-UNNAMED --add-modules=jdk.incubator.vector --add-exports=java.desktop/com.sun.java.swing.plaf.windows=ALL-UNNAMED -classpath """ & My.Settings.SDRTPath & "\lib\*"" io.github.dsheirer.gui.SDRTrunk"
                 Case "0.6.x"
-                    sdrproc.StartInfo.Arguments = "--add-exports=javafx.base/com.sun.javafx.Event=ALL-UNNAMED --add-modules=jdk.incubator.vector --add-exports=java.desktop/com.sun.java.swing.plaf.windows=ALL-UNNAMED -classpath """ & My.Settings.SDRTPath & "\Lib\*"" --enable-preview --enable-native-access=ALL-UNNAMED ""-Djava.library.path=C:\Program Files\SDRplay\API\x64"" io.github.dsheirer.gui.SDRTrunk"
+                    sdrproc.StartInfo.Arguments = "--add-exports=javafx.base/com.sun.javafx.event=ALL-UNNAMED --add-exports=java.desktop/com.sun.java.swing.plaf.windows=ALL-UNNAMED --add-modules=jdk.incubator.vector --enable-preview --enable-native-access=ALL-UNNAMED ""-Djava.library.path=c:\Program Files\SDRplay\API\x64"" -classpath """ & My.Settings.SDRTPath & "\lib\*"" io.github.dsheirer.gui.SDRTrunk"
             End Select
 
             sdrproc.Start()
