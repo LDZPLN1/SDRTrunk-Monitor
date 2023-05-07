@@ -158,7 +158,6 @@ Public Class PrimaryForm
             sdrproc.BeginOutputReadLine()
             LogWindow.TopMost = True
             LogWindow.Show()
-            LogWindow.Focus()
             Application.DoEvents()
 
             ' ENABLE WATCHDOG TIMER
