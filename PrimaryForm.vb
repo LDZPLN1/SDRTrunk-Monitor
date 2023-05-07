@@ -3,6 +3,7 @@ Imports System.IO
 Imports System.Runtime.InteropServices
 Imports System.Threading
 Imports System.Timers
+Imports System.Windows.Forms.VisualStyles.VisualStyleElement
 
 Public Class PrimaryForm
     Private oMutex As Mutex
@@ -33,6 +34,7 @@ Public Class PrimaryForm
                 End If
             Loop
 
+            ActiveAppPath = My.Settings.SDRTPath
             AutoRestartMenuItem.Checked = My.Settings.AutoRestart
 
             If My.Settings.ExternalCommand <> String.Empty Then
@@ -154,32 +156,9 @@ Public Class PrimaryForm
             sdrproc.Start()
             sdrprocid = sdrproc.Id
             sdrproc.BeginOutputReadLine()
+            LogWindow.TopMost = True
             LogWindow.Show()
             Application.DoEvents()
-
-            ' MINIMIZE INITIAL JAVA WINDOW
-            Dim sprocrun As Boolean = False
-            Dim proclist As Process()
-            Dim attempts As Integer = 0
-
-            Do Until sprocrun = True
-                Thread.Sleep(50)
-                Application.DoEvents()
-                attempts += 1
-                proclist = Process.GetProcesses
-
-                For Each sproc As Process In proclist
-                    If sproc.MainWindowTitle = ActiveAppPath & "\bin\java.exe" Then
-                        SetWindow(sproc.MainWindowHandle, 2)
-                        sprocrun = True
-                        Exit For
-                    End If
-                Next
-
-                If attempts = 60 Then sprocrun = True
-            Loop
-
-            LogWindow.Focus()
 
             ' ENABLE WATCHDOG TIMER
             ignorefuture = False
@@ -242,6 +221,18 @@ Public Class PrimaryForm
                         ignorefuture = True
                     End If
                 End If
+            ElseIf args.Data.Contains("starting main application gui") Then
+                UpdateLog(args.Data, 0)
+                Dim proclist As Process() = Process.GetProcesses
+
+                For Each sproc As Process In proclist
+                    If sproc.MainWindowTitle = ActiveAppPath & "\bin\java.exe" Then
+                        SetWindow(sproc.MainWindowHandle, 2)
+                        Exit For
+                    End If
+                Next
+
+                Invoke(Sub() HideLog())
             Else
                 UpdateLog(args.Data, 0)
             End If
@@ -279,7 +270,8 @@ Public Class PrimaryForm
                 LogWindow.LogTextBox.SelectionBackColor = ltextbcolor.Color
             End If
 
-            LogWindow.Refresh()
+            LogWindow.LogTextBox.SelectionStart = LogWindow.LogTextBox.Text.Length
+            LogWindow.LogTextBox.ScrollToCaret()
         End If
     End Sub
 
@@ -309,6 +301,7 @@ Public Class PrimaryForm
 
     Private Shared Sub HideLog()
         LogWindow.Hide()
+        LogWindow.TopMost = False
     End Sub
 
     Private Sub ExecuteExternal()
@@ -349,7 +342,7 @@ Public Class PrimaryForm
     '   1 = STARTED BY THIS APP
     '   2 = RUNNING, BUT NOT STARTED BY THIS APP
 
-    Private Function SDRTState()
+    Private Shared Function SDRTState()
         SDRTState = 0
         Dim proclist As Process() = Process.GetProcessesByName("java")
 
