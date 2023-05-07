@@ -1,4 +1,5 @@
 ﻿Imports System.ComponentModel
+Imports System.Drawing.Text
 Imports System.IO
 Imports System.Runtime.InteropServices
 Imports System.Threading
@@ -11,6 +12,9 @@ Public Class PrimaryForm
     Private Shared ReadOnly sdrproc As New Process()
     Private Shared ignorefuture As Boolean = False
     Private Shared ActiveAppPath As String = String.Empty
+    Private Shared ActiveJavaProcess As Process
+    Private Const GWL_STYLE As Long = (-16&)
+    Private Const WS_VISIBLE As Long = &H10000000
 
     Public pchecktimer As New Timers.Timer(60000)
 
@@ -156,14 +160,43 @@ Public Class PrimaryForm
             sdrproc.Start()
             sdrprocid = sdrproc.Id
             sdrproc.BeginOutputReadLine()
+
+            ' WAIT FOR JAVA WINDOW
+            Dim proclist As Process()
+            Dim procrunning As Boolean = False
+            Dim attempts As Integer = 0
+
+            Do Until procrunning Or (attempts = 100)
+                Thread.Sleep(50)
+                Application.DoEvents()
+                proclist = Process.GetProcesses
+
+                For Each sproc As Process In proclist
+                    If sproc.MainWindowTitle = ActiveAppPath & "\bin\java.exe" Then
+                        ActiveJavaProcess = sproc
+                        SetWindow(sproc.MainWindowHandle, 2)
+                        procrunning = True
+                        Exit For
+                    End If
+                Next
+            Loop
+
             LogWindow.TopMost = True
             LogWindow.Show()
-            Application.DoEvents()
 
-            ' ENABLE WATCHDOG TIMER
-            ignorefuture = False
-            pchecktimer.Enabled = True
-            TrayNotifyIcon.Text = "SDRTrunk Monitor" & Environment.NewLine & "Monitoring PID " & sdrprocid.ToString()
+            If attempts = 100 Then
+                UpdateLog(Environment.NewLine & "SDRTRUNK FAILED TO START" & Environment.NewLine, 3)
+                sdrproc.CancelOutputRead()
+                sdrproc.Close()
+                ActiveJavaProcess = Nothing
+                sdrprocid = 0
+                ActiveAppPath = String.Empty
+            Else
+                ' ENABLE WATCHDOG TIMER
+                ignorefuture = False
+                pchecktimer.Enabled = True
+                TrayNotifyIcon.Text = "SDRTrunk Monitor" & Environment.NewLine & "Monitoring PID " & sdrprocid.ToString()
+            End If
         End If
     End Sub
 
@@ -190,6 +223,7 @@ Public Class PrimaryForm
                 Loop
 
                 sdrproc.Close()
+                ActiveJavaProcess = Nothing
                 sdrprocid = 0
                 LogWindow.Hide()
                 TrayNotifyIcon.Text = "SDRTrunk Monitor"
@@ -223,15 +257,8 @@ Public Class PrimaryForm
                 End If
             ElseIf args.Data.Contains("starting main application gui") Then
                 UpdateLog(args.Data, 0)
-                Dim proclist As Process() = Process.GetProcesses
-
-                For Each sproc As Process In proclist
-                    If sproc.MainWindowTitle = ActiveAppPath & "\bin\java.exe" Then
-                        SetWindow(sproc.MainWindowHandle, 2)
-                        Exit For
-                    End If
-                Next
-
+                SetWindow(ActiveJavaProcess.MainWindowHandle, 2)
+                LogWindow.TopMost = False
                 Invoke(Sub() HideLog())
             Else
                 UpdateLog(args.Data, 0)
@@ -293,6 +320,7 @@ Public Class PrimaryForm
                 pchecktimer.Enabled = False
                 sdrproc.CancelOutputRead()
                 sdrproc.Close()
+                ActiveJavaProcess = Nothing
                 sdrprocid = 0
                 Invoke(Sub() HideLog())
             End If
