@@ -7,9 +7,10 @@ Public Class LogWindow
         LogTextBox.Height = Height - 38
     End Sub
 
-    Private Sub LogWindow_Closing(sender As Object, e As CancelEventArgs) Handles MyBase.Closing
-        Hide()
-        e.Cancel = True
+    Private Sub LogWindow_FormClosing(sender As Object, e As FormClosingEventArgs) Handles Me.FormClosing
+        If e.CloseReason = CloseReason.UserClosing Then
+            e.Cancel = True
+            Hide()
+        End If
     End Sub
-
 End Class
