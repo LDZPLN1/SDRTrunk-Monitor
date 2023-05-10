@@ -4,7 +4,6 @@ Imports System.IO
 Imports System.Runtime.InteropServices
 Imports System.Threading
 Imports System.Timers
-Imports System.Windows.Forms.VisualStyles.VisualStyleElement
 
 Public Class PrimaryForm
     Private oMutex As Mutex
