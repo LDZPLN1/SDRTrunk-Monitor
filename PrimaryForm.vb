@@ -11,10 +11,9 @@ Public Class PrimaryForm
     Private Shared ignorefuture As Boolean = False
     Private Shared ActiveAppPath As String = String.Empty
     Private Shared ActiveJavaProcess As Process
-    Private Const GWL_STYLE As Long = (-16&)
-    Private Const WS_VISIBLE As Long = &H10000000
 
     Public pchecktimer As New Timers.Timer(60000)
+    Public extruntimer As New Timers.Timer(60000)
 
     ' VALIDATE SETTINGS AND START WATCHDOG TIMER
     Private Sub PrimaryForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
@@ -22,7 +21,8 @@ Public Class PrimaryForm
 
         If oMutex.WaitOne(0, False) <> False Then
             AddHandler sdrproc.OutputDataReceived, AddressOf ReadStandardOutput
-            AddHandler pchecktimer.Elapsed, New ElapsedEventHandler(AddressOf TimerElapsed)
+            AddHandler pchecktimer.Elapsed, New ElapsedEventHandler(AddressOf WatchdogTimerElapsed)
+            AddHandler extruntimer.Elapsed, New ElapsedEventHandler(AddressOf ExternalTimerElapsed)
 
             If My.Settings.Watchdog < 5 Or My.Settings.Watchdog > 3600 Then My.Settings.Watchdog = 60
 
@@ -45,9 +45,19 @@ Public Class PrimaryForm
                 RunExternalMenuItem.Enabled = False
             End If
 
+            If My.Settings.TimedExternalCommand <> String.Empty Then
+                RunTimedExternalMenuItem.Checked = My.Settings.RunTimedExternal
+            Else
+                RunTimedExternalMenuItem.Enabled = False
+            End If
+
             pchecktimer.Interval = My.Settings.Watchdog * 1000
             pchecktimer.Start()
             pchecktimer.Enabled = False
+
+            extruntimer.Interval = My.Settings.ExternalCommandTimer * 1000
+            extruntimer.Start()
+            extruntimer.Enabled = False
         Else
             oMutex.Close()
             oMutex = Nothing
@@ -93,7 +103,7 @@ Public Class PrimaryForm
         StopSDRT()
 
         If RunExternalMenuItem.Checked = True Then
-            ExecuteExternal()
+            ExecuteExternal(My.Settings.ExternalCommand, True)
         End If
 
         StartSDRT()
@@ -119,6 +129,12 @@ Public Class PrimaryForm
     ' MENU ITEM TO TOGGLE EXTERNAL COMMAND BETWEEN RESTARTS
     Private Sub RunExternalMenuItem_Click(sender As Object, e As EventArgs) Handles RunExternalMenuItem.CheckedChanged
         My.Settings.RunExternal = RunExternalMenuItem.Checked
+        My.Settings.Save()
+    End Sub
+
+    ' MENU ITEM TO TOGGLE EXTERNAL TIMED COMMAND
+    Private Sub RunTimedExternalMenuItem_Click(sender As Object, e As EventArgs) Handles RunTimedExternalMenuItem.CheckedChanged
+        My.Settings.RunTimedExternal = RunTimedExternalMenuItem.Checked
         My.Settings.Save()
     End Sub
 
@@ -184,6 +200,8 @@ Public Class PrimaryForm
             Loop
 
             LogWindow.Show()
+            LogWindow.TopMost = True
+            LogWindow.TopMost = False
 
             If runchecks = 100 Then
                 UpdateLog(Environment.NewLine & "SDRTRUNK FAILED TO START" & Environment.NewLine, 3)
@@ -195,6 +213,7 @@ Public Class PrimaryForm
                 ' ENABLE WATCHDOG TIMER
                 ignorefuture = False
                 pchecktimer.Enabled = True
+                extruntimer.Enabled = True
                 TrayNotifyIcon.Text = "SDRTrunk Monitor" & Environment.NewLine & "Monitoring PID " & sdrprocid.ToString()
             End If
         End If
@@ -207,6 +226,7 @@ Public Class PrimaryForm
         Else
             If sdrprocid <> 0 Then
                 pchecktimer.Enabled = False
+                extruntimer.Enabled = False
                 sdrproc.CancelOutputRead()
                 sdrproc.CloseMainWindow()
 
@@ -244,7 +264,7 @@ Public Class PrimaryForm
                     StopSDRT()
 
                     If RunExternalMenuItem.Checked = True Then
-                        ExecuteExternal()
+                        ExecuteExternal(My.Settings.ExternalCommand, True)
                     End If
 
                     StartSDRT()
@@ -302,7 +322,7 @@ Public Class PrimaryForm
     End Sub
 
     ' CHECK PROCESS STATUS WHEN WATCHDOG TIMER FIRES
-    Private Sub TimerElapsed(ByVal sender As Object, ByVal e As ElapsedEventArgs)
+    Private Sub WatchdogTimerElapsed(ByVal sender As Object, ByVal e As ElapsedEventArgs)
         If SDRTState() = 0 Then
             If AutoRestartMenuItem.CheckState = CheckState.Checked Then
                 UpdateLog(Environment.NewLine & "AUTO RESTART INITIATED" & Environment.NewLine, 3)
@@ -310,7 +330,7 @@ Public Class PrimaryForm
                 StopSDRT()
 
                 If RunExternalMenuItem.Checked = True Then
-                    ExecuteExternal()
+                    ExecuteExternal(My.Settings.ExternalCommand, True)
                 End If
 
                 StartSDRT()
@@ -327,38 +347,47 @@ Public Class PrimaryForm
         End If
     End Sub
 
+    ' RUN EXTERNAL COMMAND WHEN EXTERNAL TIMER FIRES
+    Private Sub ExternalTimerElapsed(ByVal sender As Object, ByVal e As ElapsedEventArgs)
+        If RunTimedExternalMenuItem.CheckState = CheckState.Checked Then
+            ExecuteExternal(My.Settings.TimedExternalCommand, False)
+        End If
+    End Sub
+
+    ' HIDE LOG WINDOW
     Private Shared Sub HideLog()
         LogWindow.Hide()
         LogWindow.TopMost = False
     End Sub
 
-    Private Sub ExecuteExternal()
-        UpdateLog("EXECUTING EXTERNAL COMMAND [" & My.Settings.ExternalCommand & "]" & Environment.NewLine, 1)
+    'RUN EXTERNAL COMMAND
+    Private Sub ExecuteExternal(extcommand As String, syncwait As Boolean)
+        UpdateLog("EXECUTING EXTERNAL COMMAND [" & extcommand & "]" & Environment.NewLine, 1)
 
         Dim extproc As New Process()
-        Dim splitloc = InStr(My.Settings.ExternalCommand, " ")
+        Dim splitloc = InStr(extcommand, " ")
         extproc.StartInfo.UseShellExecute = True
         extproc.StartInfo.RedirectStandardOutput = False
 
         If splitloc = 0 Then
-            extproc.StartInfo.FileName = My.Settings.ExternalCommand
+            extproc.StartInfo.FileName = extcommand
         Else
-            extproc.StartInfo.FileName = My.Settings.ExternalCommand.Substring(0, splitloc - 1)
-            extproc.StartInfo.Arguments = My.Settings.ExternalCommand.Substring(splitloc)
+            extproc.StartInfo.FileName = extcommand.Substring(0, splitloc - 1)
+            extproc.StartInfo.Arguments = extcommand.Substring(splitloc)
         End If
 
         Try
             extproc.Start()
 
-            Do Until extproc.HasExited
-                Thread.Sleep(50)
-                Application.DoEvents()
-            Loop
+            If syncwait Then
+                Do Until extproc.HasExited
+                    Thread.Sleep(50)
+                    Application.DoEvents()
+                Loop
+            End If
         Catch ex As Win32Exception
             UpdateLog("EXTERNAL COMMAND FAILED TO EXECUTE" & Environment.NewLine, 3)
         End Try
-
-        extproc.Close()
     End Sub
 
     <DllImport("User32.dll", EntryPoint:="ShowWindow", SetLastError:=True)>

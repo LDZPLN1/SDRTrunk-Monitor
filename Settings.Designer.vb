@@ -37,7 +37,11 @@ Partial Class SettingsForm
         SelectDirButton = New Button()
         SettingsToolTip = New ToolTip(components)
         ExtCommandTextBox = New TextBox()
+        TimedCommandTextBox = New TextBox()
+        ExtTimerTextBox = New TextBox()
         ExtCommandLabel = New Label()
+        TimedCommandLabel = New Label()
+        Label1 = New Label()
         VersionGroupBox.SuspendLayout()
         SuspendLayout()
         ' 
@@ -52,10 +56,10 @@ Partial Class SettingsForm
         ' 
         ' SaveButton
         ' 
-        SaveButton.Location = New Point(278, 99)
+        SaveButton.Location = New Point(278, 170)
         SaveButton.Name = "SaveButton"
         SaveButton.Size = New Size(75, 23)
-        SaveButton.TabIndex = 6
+        SaveButton.TabIndex = 7
         SaveButton.Text = "Save"
         SaveButton.UseVisualStyleBackColor = True
         ' 
@@ -63,10 +67,10 @@ Partial Class SettingsForm
         ' 
         CancelSetButton.CausesValidation = False
         CancelSetButton.DialogResult = DialogResult.Cancel
-        CancelSetButton.Location = New Point(367, 99)
+        CancelSetButton.Location = New Point(367, 170)
         CancelSetButton.Name = "CancelSetButton"
         CancelSetButton.Size = New Size(75, 23)
-        CancelSetButton.TabIndex = 7
+        CancelSetButton.TabIndex = 8
         CancelSetButton.Text = "Cancel"
         CancelSetButton.UseVisualStyleBackColor = True
         ' 
@@ -75,7 +79,7 @@ Partial Class SettingsForm
         SDRTPathTextBox.Location = New Point(130, 12)
         SDRTPathTextBox.Name = "SDRTPathTextBox"
         SDRTPathTextBox.Size = New Size(397, 23)
-        SDRTPathTextBox.TabIndex = 1
+        SDRTPathTextBox.TabIndex = 0
         SettingsToolTip.SetToolTip(SDRTPathTextBox, "Path to SDRTrunk Base Directory")
         ' 
         ' VersionGroupBox
@@ -85,7 +89,7 @@ Partial Class SettingsForm
         VersionGroupBox.Location = New Point(570, 12)
         VersionGroupBox.Name = "VersionGroupBox"
         VersionGroupBox.Size = New Size(122, 81)
-        VersionGroupBox.TabIndex = 3
+        VersionGroupBox.TabIndex = 2
         VersionGroupBox.TabStop = False
         VersionGroupBox.Text = "SDRTrunk Version"
         ' 
@@ -114,7 +118,7 @@ Partial Class SettingsForm
         ' TimerLabel
         ' 
         TimerLabel.AutoSize = True
-        TimerLabel.Location = New Point(12, 73)
+        TimerLabel.Location = New Point(12, 102)
         TimerLabel.Name = "TimerLabel"
         TimerLabel.Size = New Size(92, 15)
         TimerLabel.TabIndex = 5
@@ -122,7 +126,7 @@ Partial Class SettingsForm
         ' 
         ' PollTimerTextBox
         ' 
-        PollTimerTextBox.Location = New Point(130, 70)
+        PollTimerTextBox.Location = New Point(130, 99)
         PollTimerTextBox.Name = "PollTimerTextBox"
         PollTimerTextBox.Size = New Size(67, 23)
         PollTimerTextBox.TabIndex = 5
@@ -140,7 +144,7 @@ Partial Class SettingsForm
         SelectDirButton.Location = New Point(533, 12)
         SelectDirButton.Name = "SelectDirButton"
         SelectDirButton.Size = New Size(23, 23)
-        SelectDirButton.TabIndex = 2
+        SelectDirButton.TabIndex = 1
         SelectDirButton.UseVisualStyleBackColor = True
         ' 
         ' ExtCommandTextBox
@@ -148,8 +152,24 @@ Partial Class SettingsForm
         ExtCommandTextBox.Location = New Point(130, 41)
         ExtCommandTextBox.Name = "ExtCommandTextBox"
         ExtCommandTextBox.Size = New Size(426, 23)
-        ExtCommandTextBox.TabIndex = 4
+        ExtCommandTextBox.TabIndex = 3
         SettingsToolTip.SetToolTip(ExtCommandTextBox, "External Command to be Executed Between Restarts")
+        ' 
+        ' TimedCommandTextBox
+        ' 
+        TimedCommandTextBox.Location = New Point(130, 70)
+        TimedCommandTextBox.Name = "TimedCommandTextBox"
+        TimedCommandTextBox.Size = New Size(426, 23)
+        TimedCommandTextBox.TabIndex = 4
+        SettingsToolTip.SetToolTip(TimedCommandTextBox, "External Command to be Executed Between Restarts")
+        ' 
+        ' ExtTimerTextBox
+        ' 
+        ExtTimerTextBox.Location = New Point(130, 128)
+        ExtTimerTextBox.Name = "ExtTimerTextBox"
+        ExtTimerTextBox.Size = New Size(67, 23)
+        ExtTimerTextBox.TabIndex = 6
+        SettingsToolTip.SetToolTip(ExtTimerTextBox, "Watchdog Timer in Seconds")
         ' 
         ' ExtCommandLabel
         ' 
@@ -160,13 +180,35 @@ Partial Class SettingsForm
         ExtCommandLabel.TabIndex = 8
         ExtCommandLabel.Text = "External Command:"
         ' 
+        ' TimedCommandLabel
+        ' 
+        TimedCommandLabel.AutoSize = True
+        TimedCommandLabel.Location = New Point(12, 73)
+        TimedCommandLabel.Name = "TimedCommandLabel"
+        TimedCommandLabel.Size = New Size(103, 15)
+        TimedCommandLabel.TabIndex = 9
+        TimedCommandLabel.Text = "Timed Command:"
+        ' 
+        ' Label1
+        ' 
+        Label1.AutoSize = True
+        Label1.Location = New Point(12, 131)
+        Label1.Name = "Label1"
+        Label1.Size = New Size(88, 15)
+        Label1.TabIndex = 12
+        Label1.Text = "Ext Timer (Sec):"
+        ' 
         ' SettingsForm
         ' 
         AcceptButton = SaveButton
         AutoScaleDimensions = New SizeF(7F, 15F)
         AutoScaleMode = AutoScaleMode.Font
         CancelButton = CancelSetButton
-        ClientSize = New Size(704, 131)
+        ClientSize = New Size(704, 201)
+        Controls.Add(ExtTimerTextBox)
+        Controls.Add(Label1)
+        Controls.Add(TimedCommandTextBox)
+        Controls.Add(TimedCommandLabel)
         Controls.Add(ExtCommandTextBox)
         Controls.Add(ExtCommandLabel)
         Controls.Add(SelectDirButton)
@@ -204,4 +246,8 @@ Partial Class SettingsForm
     Friend WithEvents SettingsToolTip As ToolTip
     Friend WithEvents ExtCommandTextBox As TextBox
     Friend WithEvents ExtCommandLabel As Label
+    Friend WithEvents TimedCommandLabel As Label
+    Friend WithEvents TimedCommandTextBox As TextBox
+    Friend WithEvents ExtTimerTextBox As TextBox
+    Friend WithEvents Label1 As Label
 End Class

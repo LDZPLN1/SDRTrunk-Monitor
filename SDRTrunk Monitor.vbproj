@@ -11,7 +11,7 @@
     <Title>SDRTrunk Monitor</Title>
     <Copyright>Copyright © 2023 Douglas Graham, All Rights Reserved</Copyright>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <Version>1.1.2</Version>
+    <Version>1.2.0</Version>
   </PropertyGroup>
 
   <ItemGroup>

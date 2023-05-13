@@ -19,6 +19,8 @@ Public Class SettingsForm
 
         ExtCommandTextBox.Text = My.Settings.ExternalCommand
         PollTimerTextBox.Text = My.Settings.Watchdog
+        TimedCommandTextBox.Text = My.Settings.TimedExternalCommand
+        ExtTimerTextBox.Text = My.Settings.ExternalCommandTimer
     End Sub
 
     ' SELECT DIRECTORY AND VALIDATE
@@ -56,6 +58,8 @@ Public Class SettingsForm
             My.Settings.SDRTPath = SDRTPathTextBox.Text
             My.Settings.ExternalCommand = ExtCommandTextBox.Text
             My.Settings.Watchdog = PollTimerTextBox.Text
+            My.Settings.TimedExternalCommand = TimedCommandTextBox.Text
+            My.Settings.ExternalCommandTimer = ExtTimerTextBox.Text
 
             My.Settings.Save()
 
@@ -67,12 +71,27 @@ Public Class SettingsForm
                 PrimaryForm.RunExternalMenuItem.Enabled = False
             End If
 
+            If My.Settings.TimedExternalCommand <> String.Empty Then
+                PrimaryForm.RunTimedExternalMenuItem.Checked = My.Settings.RunTimedExternal
+                PrimaryForm.RunTimedExternalMenuItem.Enabled = True
+            Else
+                PrimaryForm.RunTimedExternalMenuItem.Checked = False
+                PrimaryForm.RunTimedExternalMenuItem.Enabled = False
+            End If
+
             Dim tstate As Boolean = PrimaryForm.pchecktimer.Enabled
 
             PrimaryForm.pchecktimer.Stop()
             PrimaryForm.pchecktimer.Interval = My.Settings.Watchdog * 1000
             PrimaryForm.pchecktimer.Start()
             PrimaryForm.pchecktimer.Enabled = tstate
+
+            tstate = PrimaryForm.extruntimer.Enabled
+
+            PrimaryForm.extruntimer.Stop()
+            PrimaryForm.extruntimer.Interval = My.Settings.ExternalCommandTimer * 1000
+            PrimaryForm.extruntimer.Start()
+            PrimaryForm.extruntimer.Enabled = tstate
             Close()
         End If
     End Sub
@@ -85,7 +104,7 @@ Public Class SettingsForm
 
     ' VALIDATE POLL TIMER SETTING IS AN INTEGER AND WITHIN RANGE
     Private Sub PollTimerTextBox_Validating(sender As Object, e As CancelEventArgs) Handles PollTimerTextBox.Validating
-        If PollTimerTextBox.TextLength = 0 Then PollTimerTextBox.Text = "60"
+        If PollTimerTextBox.TextLength = 0 Then PollTimerTextBox.Text = "300"
 
         If Integer.TryParse(PollTimerTextBox.Text, Nothing) Then
             If Int(PollTimerTextBox.Text) < 5 Or Int(PollTimerTextBox.Text) > 3600 Then
@@ -102,4 +121,22 @@ Public Class SettingsForm
         End If
     End Sub
 
+    ' VALIDATE EXTERNAL COMMAND TIMER SETTING IS AN INTEGER AND WITHIN RANGE
+    Private Sub ExtTimerTextBox_Validating(sender As Object, e As CancelEventArgs) Handles ExtTimerTextBox.Validating
+        If ExtTimerTextBox.TextLength = 0 Then PollTimerTextBox.Text = "3600"
+
+        If Integer.TryParse(ExtTimerTextBox.Text, Nothing) Then
+            If Int(ExtTimerTextBox.Text) < 60 Or Int(ExtTimerTextBox.Text) > 43200 Then
+                SettingsToolTip.Show("Please enter a vlue between 60 and 43200.", sender, 0, sender.Height, 5000)
+                ExtTimerTextBox.SelectAll()
+                e.Cancel = True
+            Else
+                SettingsToolTip.SetToolTip(ExtTimerTextBox, String.Empty)
+            End If
+        Else
+            SettingsToolTip.Show("Please enter a vlue between 600 and 43200.", sender, 0, sender.Height, 5000)
+            ExtTimerTextBox.SelectAll()
+            e.Cancel = True
+        End If
+    End Sub
 End Class

@@ -125,6 +125,42 @@ Namespace My
                 Me("ExternalCommand") = value
             End Set
         End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("False")>  _
+        Public Property RunTimedExternal() As Boolean
+            Get
+                Return CType(Me("RunTimedExternal"),Boolean)
+            End Get
+            Set
+                Me("RunTimedExternal") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("")>  _
+        Public Property TimedExternalCommand() As String
+            Get
+                Return CType(Me("TimedExternalCommand"),String)
+            End Get
+            Set
+                Me("TimedExternalCommand") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("3600")>  _
+        Public Property ExternalCommandTimer() As Integer
+            Get
+                Return CType(Me("ExternalCommandTimer"),Integer)
+            End Get
+            Set
+                Me("ExternalCommandTimer") = value
+            End Set
+        End Property
     End Class
 End Namespace
 
