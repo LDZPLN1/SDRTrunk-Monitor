@@ -87,19 +87,19 @@ Public Class PrimaryForm
 
     ' MENU ITEM TO START SDRTRUNK
     Private Sub StartSDRTrunkToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles StartMenuItem.Click
-        UpdateLog(Environment.NewLine & "USER INITIATED START" & Environment.NewLine, 1)
+        UpdateLog("USER INITIATED START", 1)
         StartSDRT()
     End Sub
 
     ' MENU ITEM TO STOP SDRTRUNK
     Private Sub StopSDRTrunkToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles StopMenuItem.Click
-        UpdateLog(Environment.NewLine & "USER INITIATED STOP" & Environment.NewLine, 1)
+        UpdateLog("USER INITIATED STOP", 1)
         StopSDRT()
     End Sub
 
     ' MENU ITEM TO RESTART SDRTRUNK
     Private Sub RestartSDRTrunkToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles RestartMenuItem.Click
-        UpdateLog(Environment.NewLine & "USER INITIATED RESTART" & Environment.NewLine, 1)
+        UpdateLog("USER INITIATED RESTART", 1)
         StopSDRT()
 
         If RunExternalMenuItem.Checked = True Then
@@ -204,7 +204,7 @@ Public Class PrimaryForm
             LogWindow.TopMost = False
 
             If runchecks = 100 Then
-                UpdateLog(Environment.NewLine & "SDRTRUNK FAILED TO START" & Environment.NewLine, 3)
+                UpdateLog("SDRTRUNK FAILED TO START", 3)
                 sdrproc.CancelOutputRead()
                 sdrproc.Close()
                 sdrprocid = 0
@@ -260,7 +260,7 @@ Public Class PrimaryForm
                 UpdateLog(args.Data, 2)
 
                 If AutoRestartMenuItem.CheckState = CheckState.Checked Then
-                    UpdateLog(Environment.NewLine & "AUTO RESTART INITIATED" & Environment.NewLine, 3)
+                    UpdateLog("AUTO RESTART INITIATED", 3)
                     StopSDRT()
 
                     If RunExternalMenuItem.Checked = True Then
@@ -270,6 +270,7 @@ Public Class PrimaryForm
                     StartSDRT()
                 Else
                     If Not ignorefuture Then
+                        UpdateLog("SDRTRUNK PROCESS FAILED", 3)
                         TrayNotifyIcon.BalloonTipText = "SDRTRunk Process Appears to Have Failed"
                         TrayNotifyIcon.ShowBalloonTip(1)
                         ignorefuture = True
@@ -325,7 +326,7 @@ Public Class PrimaryForm
     Private Sub WatchdogTimerElapsed(ByVal sender As Object, ByVal e As ElapsedEventArgs)
         If SDRTState() = 0 Then
             If AutoRestartMenuItem.CheckState = CheckState.Checked Then
-                UpdateLog(Environment.NewLine & "AUTO RESTART INITIATED" & Environment.NewLine, 3)
+                UpdateLog("AUTO RESTART INITIATED", 3)
 
                 StopSDRT()
 
@@ -335,6 +336,7 @@ Public Class PrimaryForm
 
                 StartSDRT()
             Else
+                UpdateLog("SDRTRUNK PROCESS FAILED", 3)
                 TrayNotifyIcon.BalloonTipText = "SDRTRunk Process has Exited"
                 TrayNotifyIcon.ShowBalloonTip(1)
                 pchecktimer.Enabled = False
@@ -362,7 +364,7 @@ Public Class PrimaryForm
 
     'RUN EXTERNAL COMMAND
     Private Sub ExecuteExternal(extcommand As String, syncwait As Boolean)
-        UpdateLog("EXECUTING EXTERNAL COMMAND [" & extcommand & "]" & Environment.NewLine, 1)
+        UpdateLog("EXECUTING EXTERNAL COMMAND [" & extcommand & "]", 1)
 
         Dim extproc As New Process()
         Dim splitloc = InStr(extcommand, " ")
@@ -386,7 +388,7 @@ Public Class PrimaryForm
                 Loop
             End If
         Catch ex As Win32Exception
-            UpdateLog("EXTERNAL COMMAND FAILED TO EXECUTE" & Environment.NewLine, 3)
+            UpdateLog("EXTERNAL COMMAND FAILED TO EXECUTE", 3)
         End Try
     End Sub
 
