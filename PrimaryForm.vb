@@ -161,10 +161,10 @@ Public Class PrimaryForm
 
             ' WAIT FOR JAVA WINDOW
             Dim proclist As Process()
-            Dim procrunning As Boolean = False
-            Dim attempts As Integer = 0
+            Dim procfound As Boolean = False
+            Dim runchecks As Integer = 0
 
-            Do Until procrunning Or (attempts = 100)
+            Do Until procfound Or (runchecks = 100)
                 Thread.Sleep(50)
                 Application.DoEvents()
                 proclist = Process.GetProcesses
@@ -173,20 +173,22 @@ Public Class PrimaryForm
                     If sproc.MainWindowTitle = ActiveAppPath & "\bin\java.exe" Then
                         ActiveJavaProcess = sproc
                         SetWindow(sproc.MainWindowHandle, 2)
-                        procrunning = True
+                        procfound = True
                         Exit For
                     End If
                 Next
+
+                If Not procfound Then
+                    runchecks += 1
+                End If
             Loop
 
-            LogWindow.TopMost = True
             LogWindow.Show()
 
-            If attempts = 100 Then
+            If runchecks = 100 Then
                 UpdateLog(Environment.NewLine & "SDRTRUNK FAILED TO START" & Environment.NewLine, 3)
                 sdrproc.CancelOutputRead()
                 sdrproc.Close()
-                ActiveJavaProcess = Nothing
                 sdrprocid = 0
                 ActiveAppPath = String.Empty
             Else
@@ -256,7 +258,6 @@ Public Class PrimaryForm
             ElseIf args.Data.Contains("starting main application gui") Then
                 UpdateLog(args.Data, 0)
                 SetWindow(ActiveJavaProcess.MainWindowHandle, 2)
-                LogWindow.TopMost = False
                 Invoke(Sub() HideLog())
             Else
                 UpdateLog(args.Data, 0)
@@ -306,11 +307,12 @@ Public Class PrimaryForm
             If AutoRestartMenuItem.CheckState = CheckState.Checked Then
                 UpdateLog(Environment.NewLine & "AUTO RESTART INITIATED" & Environment.NewLine, 3)
 
+                StopSDRT()
+
                 If RunExternalMenuItem.Checked = True Then
                     ExecuteExternal()
                 End If
 
-                StopSDRT()
                 StartSDRT()
             Else
                 TrayNotifyIcon.BalloonTipText = "SDRTRunk Process has Exited"
