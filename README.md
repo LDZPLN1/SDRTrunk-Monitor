@@ -10,7 +10,7 @@ Settings Overview:
 * SDRTrunk Path - This should point to the base path for SDRTrunk (the folder that holds the bin, conf, legal, lib folders, etc.)
 * SDRTrunk Version - Select the version you are running. This setting affects the parameters passed to the Java executable
 * External Command - (Optional) An external command that can be run in between restarts of SDRTrunk. Enclose any options that have spaces in quotes
-* Timed Command - (Optional) An externa command to run every "x" seconds while SDRTrunk is running
+* Timed Command - (Optional) An external command to run every "x" seconds while SDRTrunk is running
 * Poll Timer - How often the app polls the SDRTrunk process to verify it is still running.
 * Ext Timer - How often to run the Timed Command
 
