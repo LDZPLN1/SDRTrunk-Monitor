@@ -11,8 +11,6 @@ Public Class PrimaryForm
     Private Shared ignorefuture As Boolean = False
     Private Shared ActiveAppPath As String = String.Empty
     Private Shared ActiveJavaProcess As Process
-    Private Const GWL_STYLE As Long = (-16&)
-    Private Const WS_VISIBLE As Long = &H10000000
 
     Public pchecktimer As New Timers.Timer(60000)
 
