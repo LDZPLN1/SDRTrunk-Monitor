@@ -103,7 +103,7 @@ Public Class PrimaryForm
         StopSDRT()
 
         If RunExternalMenuItem.Checked = True Then
-            ExecuteExternal(My.Settings.ExternalCommand, True)
+            ExecuteExternal(My.Settings.ExternalCommand, True, False)
         End If
 
         StartSDRT()
@@ -264,7 +264,7 @@ Public Class PrimaryForm
                     StopSDRT()
 
                     If RunExternalMenuItem.Checked = True Then
-                        ExecuteExternal(My.Settings.ExternalCommand, True)
+                        ExecuteExternal(My.Settings.ExternalCommand, True, False)
                     End If
 
                     StartSDRT()
@@ -331,7 +331,7 @@ Public Class PrimaryForm
                 StopSDRT()
 
                 If RunExternalMenuItem.Checked = True Then
-                    ExecuteExternal(My.Settings.ExternalCommand, True)
+                    ExecuteExternal(My.Settings.ExternalCommand, True, False)
                 End If
 
                 StartSDRT()
@@ -352,7 +352,7 @@ Public Class PrimaryForm
     ' RUN EXTERNAL COMMAND WHEN EXTERNAL TIMER FIRES
     Private Sub ExternalTimerElapsed(ByVal sender As Object, ByVal e As ElapsedEventArgs)
         If RunTimedExternalMenuItem.CheckState = CheckState.Checked Then
-            ExecuteExternal(My.Settings.TimedExternalCommand, False)
+            ExecuteExternal(My.Settings.TimedExternalCommand, False, My.Settings.TimedExternalMinimized)
         End If
     End Sub
 
@@ -363,7 +363,7 @@ Public Class PrimaryForm
     End Sub
 
     'RUN EXTERNAL COMMAND
-    Private Sub ExecuteExternal(extcommand As String, syncwait As Boolean)
+    Private Sub ExecuteExternal(extcommand As String, syncwait As Boolean, minwindow As Boolean)
         UpdateLog("EXECUTING EXTERNAL COMMAND [" & extcommand & "]", 1)
 
         Dim extproc As New Process()
@@ -376,6 +376,10 @@ Public Class PrimaryForm
         Else
             extproc.StartInfo.FileName = extcommand.Substring(0, splitloc - 1)
             extproc.StartInfo.Arguments = extcommand.Substring(splitloc)
+        End If
+
+        If minwindow Then
+            extproc.StartInfo.WindowStyle = ProcessWindowStyle.Minimized
         End If
 
         Try

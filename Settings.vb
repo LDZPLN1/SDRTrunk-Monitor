@@ -21,16 +21,25 @@ Public Class SettingsForm
         PollTimerTextBox.Text = My.Settings.Watchdog
         TimedCommandTextBox.Text = My.Settings.TimedExternalCommand
         ExtTimerTextBox.Text = My.Settings.ExternalCommandTimer
+        RunTimedExtMinCheckBox.Checked = My.Settings.TimedExternalMinimized
+
+        If SDRTPathTextBox.Text = String.Empty Then
+            VersionGroupBox.Enabled = False
+        End If
+
+        If TimedCommandTextBox.Text = String.Empty Then
+            ExtTimerTextBox.Enabled = False
+            RunTimedExtMinCheckBox.Enabled = False
+        End If
+
+        AutoValidate = AutoValidate.EnablePreventFocusChange
     End Sub
 
     ' SELECT DIRECTORY AND VALIDATE
     Private Sub SelectDirButton_Click(sender As Object, e As EventArgs) Handles SelectDirButton.Click
         If SDRTFolderDialog.ShowDialog() = DialogResult.OK Then
-            If File.Exists(SDRTFolderDialog.SelectedPath & "\bin\sdr-trunk.bat") Then
-                SDRTPathTextBox.Text = SDRTFolderDialog.SelectedPath
-            Else
-                SettingsToolTip.Show("SDRTrunk not found in selected directory", SDRTPathTextBox, 0, SDRTPathTextBox.Height, 5000)
-            End If
+            SDRTPathTextBox.Text = SDRTFolderDialog.SelectedPath
+            SDRTPathTextBox_Validate()
         End If
     End Sub
 
@@ -38,9 +47,14 @@ Public Class SettingsForm
     Private Sub SaveButton_Click(sender As Object, e As EventArgs) Handles SaveButton.Click
         Dim valerror As Boolean = False
 
-        If Not File.Exists(SDRTPathTextBox.Text & "\bin\sdr-trunk.bat") Then
-            SettingsToolTip.Show("SDRTrunk not found in selected directory", SDRTPathTextBox, 0, SDRTPathTextBox.Height, 5000)
+        If SDRTPathTextBox.Text = String.Empty Then
+            SettingsToolTip.Show("SDRTrunk directory not selected", SDRTPathTextBox, 0, SDRTPathTextBox.Height, 5000)
             valerror = True
+        Else
+            If Not File.Exists(SDRTPathTextBox.Text & "\bin\sdr-trunk.bat") Then
+                SettingsToolTip.Show("SDRTrunk not found in selected directory", SDRTPathTextBox, 0, SDRTPathTextBox.Height, 5000)
+                valerror = True
+            End If
         End If
 
         If Not V5RadioButton.Checked And Not V6RadioButton.Checked And Not valerror Then
@@ -60,7 +74,7 @@ Public Class SettingsForm
             My.Settings.Watchdog = PollTimerTextBox.Text
             My.Settings.TimedExternalCommand = TimedCommandTextBox.Text
             My.Settings.ExternalCommandTimer = ExtTimerTextBox.Text
-
+            My.Settings.TimedExternalMinimized = RunTimedExtMinCheckBox.Checked
             My.Settings.Save()
 
             If My.Settings.ExternalCommand <> String.Empty Then
@@ -137,6 +151,33 @@ Public Class SettingsForm
             SettingsToolTip.Show("Please enter a vlue between 600 and 43200.", sender, 0, sender.Height, 5000)
             ExtTimerTextBox.SelectAll()
             e.Cancel = True
+        End If
+    End Sub
+
+    Private Sub SDRTPathTextBox_Validating(sender As Object, e As CancelEventArgs) Handles SDRTPathTextBox.Validating
+        SDRTPathTextBox_Validate()
+    End Sub
+
+    Private Sub SDRTPathTextBox_Validate()
+        If SDRTPathTextBox.Text <> String.Empty Then
+            If File.Exists(SDRTPathTextBox.Text & "\bin\sdr-trunk.bat") Then
+                VersionGroupBox.Enabled = True
+            Else
+                VersionGroupBox.Enabled = False
+                SettingsToolTip.Show("SDRTrunk not found in selected directory", SDRTPathTextBox, 0, SDRTPathTextBox.Height, 5000)
+            End If
+        Else
+            VersionGroupBox.Enabled = False
+        End If
+    End Sub
+
+    Private Sub TimedCommandTextBox_Validated(sender As Object, e As EventArgs) Handles TimedCommandTextBox.Validated
+        If TimedCommandTextBox.Text = String.Empty Then
+            ExtTimerTextBox.Enabled = False
+            RunTimedExtMinCheckBox.Enabled = False
+        Else
+            ExtTimerTextBox.Enabled = True
+            RunTimedExtMinCheckBox.Enabled = True
         End If
     End Sub
 End Class

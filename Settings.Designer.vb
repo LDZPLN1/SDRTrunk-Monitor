@@ -42,6 +42,7 @@ Partial Class SettingsForm
         ExtCommandLabel = New Label()
         TimedCommandLabel = New Label()
         Label1 = New Label()
+        RunTimedExtMinCheckBox = New CheckBox()
         VersionGroupBox.SuspendLayout()
         SuspendLayout()
         ' 
@@ -198,6 +199,16 @@ Partial Class SettingsForm
         Label1.TabIndex = 12
         Label1.Text = "Ext Timer (Sec):"
         ' 
+        ' RunTimedExtMinCheckBox
+        ' 
+        RunTimedExtMinCheckBox.AutoSize = True
+        RunTimedExtMinCheckBox.Location = New Point(218, 132)
+        RunTimedExtMinCheckBox.Name = "RunTimedExtMinCheckBox"
+        RunTimedExtMinCheckBox.Size = New Size(106, 19)
+        RunTimedExtMinCheckBox.TabIndex = 14
+        RunTimedExtMinCheckBox.Text = "Run Minimized"
+        RunTimedExtMinCheckBox.UseVisualStyleBackColor = True
+        ' 
         ' SettingsForm
         ' 
         AcceptButton = SaveButton
@@ -205,6 +216,7 @@ Partial Class SettingsForm
         AutoScaleMode = AutoScaleMode.Font
         CancelButton = CancelSetButton
         ClientSize = New Size(704, 201)
+        Controls.Add(RunTimedExtMinCheckBox)
         Controls.Add(ExtTimerTextBox)
         Controls.Add(Label1)
         Controls.Add(TimedCommandTextBox)
@@ -250,4 +262,5 @@ Partial Class SettingsForm
     Friend WithEvents TimedCommandTextBox As TextBox
     Friend WithEvents ExtTimerTextBox As TextBox
     Friend WithEvents Label1 As Label
+    Friend WithEvents RunTimedExtMinCheckBox As CheckBox
 End Class

@@ -29,5 +29,8 @@
     <Setting Name="ExternalCommandTimer" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">3600</Value>
     </Setting>
+    <Setting Name="TimedExternalMinimized" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
