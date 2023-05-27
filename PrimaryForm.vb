@@ -87,19 +87,19 @@ Public Class PrimaryForm
 
     ' MENU ITEM TO START SDRTRUNK
     Private Sub StartSDRTrunkToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles StartMenuItem.Click
-        UpdateLog("USER INITIATED START", 1)
+        UpdateLog(FormattedTime() & " USER INITIATED START", 1)
         StartSDRT()
     End Sub
 
     ' MENU ITEM TO STOP SDRTRUNK
     Private Sub StopSDRTrunkToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles StopMenuItem.Click
-        UpdateLog("USER INITIATED STOP", 1)
+        UpdateLog(FormattedTime() & " USER INITIATED STOP", 1)
         StopSDRT()
     End Sub
 
     ' MENU ITEM TO RESTART SDRTRUNK
     Private Sub RestartSDRTrunkToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles RestartMenuItem.Click
-        UpdateLog("USER INITIATED RESTART", 1)
+        UpdateLog(FormattedTime() & " USER INITIATED RESTART", 1)
         StopSDRT()
 
         If RunExternalMenuItem.Checked = True Then
@@ -204,7 +204,7 @@ Public Class PrimaryForm
             LogWindow.TopMost = False
 
             If runchecks = 100 Then
-                UpdateLog("SDRTRUNK FAILED TO START", 3)
+                UpdateLog(FormattedTime() & " SDRTRUNK FAILED TO START", 3)
                 sdrproc.CancelOutputRead()
                 sdrproc.Close()
                 sdrprocid = 0
@@ -260,7 +260,7 @@ Public Class PrimaryForm
                 UpdateLog(args.Data, 2)
 
                 If AutoRestartMenuItem.CheckState = CheckState.Checked Then
-                    UpdateLog("AUTO RESTART INITIATED", 3)
+                    UpdateLog(FormattedTime() & " AUTO RESTART INITIATED", 3)
                     StopSDRT()
 
                     If RunExternalMenuItem.Checked = True Then
@@ -270,7 +270,7 @@ Public Class PrimaryForm
                     StartSDRT()
                 Else
                     If Not ignorefuture Then
-                        UpdateLog("SDRTRUNK PROCESS FAILED", 3)
+                        UpdateLog(FormattedTime() & " SDRTRUNK PROCESS FAILED", 3)
                         TrayNotifyIcon.BalloonTipText = "SDRTRunk Process Appears to Have Failed"
                         TrayNotifyIcon.ShowBalloonTip(1)
                         ignorefuture = True
@@ -316,9 +316,6 @@ Public Class PrimaryForm
                 LogWindow.LogTextBox.SelectionColor = ltextfcolor.Color
                 LogWindow.LogTextBox.SelectionBackColor = ltextbcolor.Color
             End If
-
-            LogWindow.LogTextBox.SelectionStart = LogWindow.LogTextBox.Text.Length
-            LogWindow.LogTextBox.ScrollToCaret()
         End If
     End Sub
 
@@ -326,7 +323,7 @@ Public Class PrimaryForm
     Private Sub WatchdogTimerElapsed(ByVal sender As Object, ByVal e As ElapsedEventArgs)
         If SDRTState() = 0 Then
             If AutoRestartMenuItem.CheckState = CheckState.Checked Then
-                UpdateLog("AUTO RESTART INITIATED", 3)
+                UpdateLog(FormattedTime() & " AUTO RESTART INITIATED", 3)
 
                 StopSDRT()
 
@@ -336,7 +333,7 @@ Public Class PrimaryForm
 
                 StartSDRT()
             Else
-                UpdateLog("SDRTRUNK PROCESS FAILED", 3)
+                UpdateLog(FormattedTime() & " SDRTRUNK PROCESS FAILED", 3)
                 TrayNotifyIcon.BalloonTipText = "SDRTRunk Process has Exited"
                 TrayNotifyIcon.ShowBalloonTip(1)
                 pchecktimer.Enabled = False
@@ -364,7 +361,7 @@ Public Class PrimaryForm
 
     'RUN EXTERNAL COMMAND
     Private Sub ExecuteExternal(extcommand As String, syncwait As Boolean, minwindow As Boolean)
-        UpdateLog("EXECUTING EXTERNAL COMMAND [" & extcommand & "]", 1)
+        UpdateLog(FormattedTime() & " EXECUTING EXTERNAL COMMAND [" & extcommand & "]", 1)
 
         Dim extproc As New Process()
         Dim splitloc = InStr(extcommand, " ")
@@ -392,7 +389,7 @@ Public Class PrimaryForm
                 Loop
             End If
         Catch ex As Win32Exception
-            UpdateLog("EXTERNAL COMMAND FAILED TO EXECUTE", 3)
+            UpdateLog(FormattedTime() & " EXTERNAL COMMAND FAILED TO EXECUTE", 3)
         End Try
     End Sub
 
@@ -415,6 +412,11 @@ Public Class PrimaryForm
                 Exit For
             End If
         Next
+    End Function
+
+    Private Function FormattedTime()
+        Dim timestamp As DateTime = DateTime.Now
+        FormattedTime = timestamp.ToString("yyyy-MM-dd HH:mm:ss")
     End Function
 
 End Class
