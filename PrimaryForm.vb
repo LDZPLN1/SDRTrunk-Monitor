@@ -3,6 +3,7 @@ Imports System.IO
 Imports System.Runtime.InteropServices
 Imports System.Threading
 Imports System.Timers
+Imports System.Windows.Forms.VisualStyles.VisualStyleElement
 
 Public Class PrimaryForm
     Private oMutex As Mutex
@@ -11,6 +12,7 @@ Public Class PrimaryForm
     Private Shared ignorefuture As Boolean = False
     Private Shared ActiveAppPath As String = String.Empty
     Private Shared ActiveJavaProcess As Process
+    Private Shared MaxLogLength As Integer = 500
 
     Public pchecktimer As New Timers.Timer(60000)
     Public extruntimer As New Timers.Timer(60000)
@@ -315,6 +317,11 @@ Public Class PrimaryForm
             If highlight > 0 Then
                 LogWindow.LogTextBox.SelectionColor = ltextfcolor.Color
                 LogWindow.LogTextBox.SelectionBackColor = ltextbcolor.Color
+            End If
+
+            If LogWindow.LogTextBox.Lines.Length > MaxLogLength Then
+                Dim LogArray() As String = Split(LogWindow.LogTextBox.Text, Environment.NewLine)
+                LogWindow.LogTextBox.Text = String.Join(Environment.NewLine, LogArray, 1, LogArray.Length - 1)
             End If
         End If
     End Sub
