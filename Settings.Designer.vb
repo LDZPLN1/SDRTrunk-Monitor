@@ -43,6 +43,7 @@ Partial Class SettingsForm
         TimedCommandLabel = New Label()
         Label1 = New Label()
         RunTimedExtMinCheckBox = New CheckBox()
+        RunAtStartupCheckBox = New CheckBox()
         VersionGroupBox.SuspendLayout()
         SuspendLayout()
         ' 
@@ -209,6 +210,16 @@ Partial Class SettingsForm
         RunTimedExtMinCheckBox.Text = "Run Minimized"
         RunTimedExtMinCheckBox.UseVisualStyleBackColor = True
         ' 
+        ' RunAtStartupCheckBox
+        ' 
+        RunAtStartupCheckBox.AutoSize = True
+        RunAtStartupCheckBox.Location = New Point(533, 132)
+        RunAtStartupCheckBox.Name = "RunAtStartupCheckBox"
+        RunAtStartupCheckBox.Size = New Size(159, 19)
+        RunAtStartupCheckBox.TabIndex = 15
+        RunAtStartupCheckBox.Text = "Run SDR Trunk At Startup"
+        RunAtStartupCheckBox.UseVisualStyleBackColor = True
+        ' 
         ' SettingsForm
         ' 
         AcceptButton = SaveButton
@@ -216,6 +227,7 @@ Partial Class SettingsForm
         AutoScaleMode = AutoScaleMode.Font
         CancelButton = CancelSetButton
         ClientSize = New Size(704, 201)
+        Controls.Add(RunAtStartupCheckBox)
         Controls.Add(RunTimedExtMinCheckBox)
         Controls.Add(ExtTimerTextBox)
         Controls.Add(Label1)
@@ -263,4 +275,5 @@ Partial Class SettingsForm
     Friend WithEvents ExtTimerTextBox As TextBox
     Friend WithEvents Label1 As Label
     Friend WithEvents RunTimedExtMinCheckBox As CheckBox
+    Friend WithEvents RunAtStartupCheckBox As CheckBox
 End Class

@@ -194,4 +194,5 @@ Partial Class PrimaryForm
     Friend WithEvents RunExternalMenuItem As ToolStripMenuItem
     Friend WithEvents ToolStripSeparator5 As ToolStripSeparator
     Friend WithEvents RunTimedExternalMenuItem As ToolStripMenuItem
+    Friend WithEvents ToolStripMenuItem1 As ToolStripMenuItem
 End Class

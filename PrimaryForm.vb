@@ -3,7 +3,6 @@ Imports System.IO
 Imports System.Runtime.InteropServices
 Imports System.Threading
 Imports System.Timers
-Imports System.Windows.Forms.VisualStyles.VisualStyleElement
 
 Public Class PrimaryForm
     Private oMutex As Mutex
@@ -60,6 +59,11 @@ Public Class PrimaryForm
             extruntimer.Interval = My.Settings.ExternalCommandTimer * 1000
             extruntimer.Start()
             extruntimer.Enabled = False
+
+            If My.Settings.RunAtStartup = True Then
+                UpdateLog(FormattedTime() & " AUTO RUN AT STARTUP INITIATED START")
+                StartSDRT()
+            End If
         Else
             oMutex.Close()
             oMutex = Nothing
@@ -89,19 +93,19 @@ Public Class PrimaryForm
 
     ' MENU ITEM TO START SDRTRUNK
     Private Sub StartSDRTrunkToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles StartMenuItem.Click
-        UpdateLog(FormattedTime() & " USER INITIATED START", 1)
+        UpdateLog(FormattedTime() & " USER INITIATED START")
         StartSDRT()
     End Sub
 
     ' MENU ITEM TO STOP SDRTRUNK
     Private Sub StopSDRTrunkToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles StopMenuItem.Click
-        UpdateLog(FormattedTime() & " USER INITIATED STOP", 1)
+        UpdateLog(FormattedTime() & " USER INITIATED STOP")
         StopSDRT()
     End Sub
 
     ' MENU ITEM TO RESTART SDRTRUNK
     Private Sub RestartSDRTrunkToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles RestartMenuItem.Click
-        UpdateLog(FormattedTime() & " USER INITIATED RESTART", 1)
+        UpdateLog(FormattedTime() & " USER INITIATED RESTART")
         StopSDRT()
 
         If RunExternalMenuItem.Checked = True Then
@@ -206,7 +210,7 @@ Public Class PrimaryForm
             LogWindow.TopMost = False
 
             If runchecks = 100 Then
-                UpdateLog(FormattedTime() & " SDRTRUNK FAILED TO START", 3)
+                UpdateLog(FormattedTime() & " SDRTRUNK FAILED TO START")
                 sdrproc.CancelOutputRead()
                 sdrproc.Close()
                 sdrprocid = 0
@@ -259,10 +263,10 @@ Public Class PrimaryForm
     Private Sub ReadStandardOutput(sender As Object, args As DataReceivedEventArgs)
         If args.Data IsNot Nothing Then
             If args.Data.Contains("Couldn't design final output low pass filter") Or args.Data.Contains("org.usb4java.LibUsbException") Or args.Data.Contains("java.lang.IllegalArgumentException") Or args.Data.Contains("throwing away samples") Then
-                UpdateLog(args.Data, 2)
+                UpdateLog(args.Data)
 
                 If AutoRestartMenuItem.CheckState = CheckState.Checked Then
-                    UpdateLog(FormattedTime() & " AUTO RESTART INITIATED", 3)
+                    UpdateLog(FormattedTime() & " AUTO RESTART INITIATED")
                     StopSDRT()
 
                     If RunExternalMenuItem.Checked = True Then
@@ -272,56 +276,34 @@ Public Class PrimaryForm
                     StartSDRT()
                 Else
                     If Not ignorefuture Then
-                        UpdateLog(FormattedTime() & " SDRTRUNK PROCESS FAILED", 3)
+                        UpdateLog(FormattedTime() & " SDRTRUNK PROCESS FAILED")
                         TrayNotifyIcon.BalloonTipText = "SDRTRunk Process Appears to Have Failed"
                         TrayNotifyIcon.ShowBalloonTip(1)
                         ignorefuture = True
                     End If
                 End If
             ElseIf args.Data.Contains("starting main application gui") Then
-                UpdateLog(args.Data, 0)
+                UpdateLog(args.Data)
                 SetWindow(ActiveJavaProcess.MainWindowHandle, 2)
                 Invoke(Sub() HideLog())
             Else
-                UpdateLog(args.Data, 0)
+                UpdateLog(args.Data)
             End If
         End If
     End Sub
 
     ' UPDATE LOG WINDOW
-    Public Sub UpdateLog(ltext As String, highlight As Integer)
+    Public Sub UpdateLog(ltext As String)
         If InvokeRequired Then
-            Invoke(Sub() UpdateLog(ltext, highlight))
+            Invoke(Sub() UpdateLog(ltext))
         Else
-            Dim ltextfcolor As New ColorDialog()
-            Dim ltextbcolor As New ColorDialog()
-
-            If highlight > 0 Then
-                ltextfcolor.Color = LogWindow.LogTextBox.SelectionColor
-                ltextbcolor.Color = LogWindow.LogTextBox.SelectionBackColor
-
-                Select Case highlight
-                    Case 1
-                        LogWindow.LogTextBox.SelectionColor = Color.White
-                        LogWindow.LogTextBox.SelectionBackColor = Color.DarkGreen
-                    Case 2
-                        LogWindow.LogTextBox.SelectionBackColor = Color.Orange
-                    Case 3
-                        LogWindow.LogTextBox.SelectionColor = Color.White
-                        LogWindow.LogTextBox.SelectionBackColor = Color.DarkRed
-                End Select
-            End If
-
             LogWindow.LogTextBox.AppendText(ltext & Environment.NewLine)
 
-            If highlight > 0 Then
-                LogWindow.LogTextBox.SelectionColor = ltextfcolor.Color
-                LogWindow.LogTextBox.SelectionBackColor = ltextbcolor.Color
-            End If
-
-            If LogWindow.LogTextBox.Lines.Length > MaxLogLength Then
-                Dim LogArray() As String = Split(LogWindow.LogTextBox.Text, Environment.NewLine)
-                LogWindow.LogTextBox.Text = String.Join(Environment.NewLine, LogArray, 1, LogArray.Length - 1)
+            If LogWindow.LogTextBox.Lines.Length - 1 > MaxLogLength Then
+                Dim LogArray As List(Of String) = LogWindow.LogTextBox.Lines.ToList()
+                LogArray.RemoveAt(0)
+                LogWindow.LogTextBox.Lines = LogArray.ToArray()
+                LogWindow.LogTextBox.Refresh()
             End If
         End If
     End Sub
@@ -330,7 +312,7 @@ Public Class PrimaryForm
     Private Sub WatchdogTimerElapsed(ByVal sender As Object, ByVal e As ElapsedEventArgs)
         If SDRTState() = 0 Then
             If AutoRestartMenuItem.CheckState = CheckState.Checked Then
-                UpdateLog(FormattedTime() & " AUTO RESTART INITIATED", 3)
+                UpdateLog(FormattedTime() & " AUTO RESTART INITIATED")
 
                 StopSDRT()
 
@@ -340,7 +322,7 @@ Public Class PrimaryForm
 
                 StartSDRT()
             Else
-                UpdateLog(FormattedTime() & " SDRTRUNK PROCESS FAILED", 3)
+                UpdateLog(FormattedTime() & " SDRTRUNK PROCESS FAILED")
                 TrayNotifyIcon.BalloonTipText = "SDRTRunk Process has Exited"
                 TrayNotifyIcon.ShowBalloonTip(1)
                 pchecktimer.Enabled = False
@@ -368,7 +350,7 @@ Public Class PrimaryForm
 
     'RUN EXTERNAL COMMAND
     Private Sub ExecuteExternal(extcommand As String, syncwait As Boolean, minwindow As Boolean)
-        UpdateLog(FormattedTime() & " EXECUTING EXTERNAL COMMAND [" & extcommand & "]", 1)
+        UpdateLog(FormattedTime() & " EXECUTING EXTERNAL COMMAND [" & extcommand & "]")
 
         Dim extproc As New Process()
         Dim splitloc = InStr(extcommand, " ")
@@ -396,7 +378,7 @@ Public Class PrimaryForm
                 Loop
             End If
         Catch ex As Win32Exception
-            UpdateLog(FormattedTime() & " EXTERNAL COMMAND FAILED TO EXECUTE", 3)
+            UpdateLog(FormattedTime() & " EXTERNAL COMMAND FAILED TO EXECUTE")
         End Try
     End Sub
 

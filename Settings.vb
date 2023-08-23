@@ -22,6 +22,7 @@ Public Class SettingsForm
         TimedCommandTextBox.Text = My.Settings.TimedExternalCommand
         ExtTimerTextBox.Text = My.Settings.ExternalCommandTimer
         RunTimedExtMinCheckBox.Checked = My.Settings.TimedExternalMinimized
+        RunAtStartupCheckBox.Checked = My.Settings.RunAtStartup
 
         If SDRTPathTextBox.Text = String.Empty Then
             VersionGroupBox.Enabled = False
@@ -75,6 +76,7 @@ Public Class SettingsForm
             My.Settings.TimedExternalCommand = TimedCommandTextBox.Text
             My.Settings.ExternalCommandTimer = ExtTimerTextBox.Text
             My.Settings.TimedExternalMinimized = RunTimedExtMinCheckBox.Checked
+            My.Settings.RunAtStartup = RunAtStartupCheckBox.Checked
             My.Settings.Save()
 
             If My.Settings.ExternalCommand <> String.Empty Then
