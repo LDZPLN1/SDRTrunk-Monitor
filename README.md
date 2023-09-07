@@ -26,6 +26,6 @@ Only tested on Windows 11, but it should work on Windows 10 as well.
 
 As an example, I use the external command setting to execute a Python script to update the SDRTrunk XML file in between restarts with new radio ID data from a database. The timed command is used to execute a Python script that imports SDRTrunk data once per hour and updates the database.  This script also scans the saved MP3 files to perform audio detection (to discard dead air files) and archives files into a folder structure based on date/system/group/TGID for known RIDs. This leaves me with a short list of RIDs to identify.
 
-If upgrading from a previous version, you can copy the user.config file from C:\Users\[username]\AppData\Local\SDRTrunk_Monitor\[SDRTrunkxxxxx]\[old version] to the \[new version] folder:
+If upgrading from a previous version, you can copy the user.config file from C:\Users\\[username]\AppData\Local\SDRTrunk_Monitor\\[SDRTrunkxxxxx]\\[old version] to the \\[new version] folder:
 
-i.e., Copy user.config from C:\Users\[username]\AppData\Local\SDRTrunk_Monitor\SDRTrunk_Monitor_Url_[random]\1.2.3.0 to C:\Users\Douglas\AppData\Local\SDRTrunk_Monitor\SDRTrunk_Monitor_Url_[random]\1.2.4.0
+i.e., Copy user.config from C:\Users\\[username]\AppData\Local\SDRTrunk_Monitor\SDRTrunk_Monitor_Url_[random]\1.2.3.0 to C:\Users\\[username\AppData\Local\SDRTrunk_Monitor\SDRTrunk_Monitor_Url_[random]\1.2.4.0
