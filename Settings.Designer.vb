@@ -213,11 +213,11 @@ Partial Class SettingsForm
         ' RunAtStartupCheckBox
         ' 
         RunAtStartupCheckBox.AutoSize = True
-        RunAtStartupCheckBox.Location = New Point(533, 132)
+        RunAtStartupCheckBox.Location = New Point(537, 132)
         RunAtStartupCheckBox.Name = "RunAtStartupCheckBox"
-        RunAtStartupCheckBox.Size = New Size(159, 19)
+        RunAtStartupCheckBox.Size = New Size(155, 19)
         RunAtStartupCheckBox.TabIndex = 15
-        RunAtStartupCheckBox.Text = "Run SDR Trunk At Startup"
+        RunAtStartupCheckBox.Text = "Run SDRTrunk At Startup"
         RunAtStartupCheckBox.UseVisualStyleBackColor = True
         ' 
         ' SettingsForm
