@@ -16,6 +16,14 @@ Public Class PrimaryForm
     Public pchecktimer As New Timers.Timer(60000)
     Public extruntimer As New Timers.Timer(60000)
 
+    Public RestartErrors As New List(Of String)({
+        "Couldn't design final output low pass filter",
+        "org.usb4java.LibUsbException",
+        "java.lang.IllegalArgumentException",
+        "throwing away samples",
+        "Maximum USB transfer buffer errors reached - transfer buffers exhausted - shutting down USB tuner"
+    })
+
     ' VALIDATE SETTINGS AND START WATCHDOG TIMER
     Private Sub PrimaryForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         oMutex = New Mutex(False, "SDRTrunk Monitor")
@@ -60,7 +68,7 @@ Public Class PrimaryForm
             extruntimer.Start()
             extruntimer.Enabled = False
 
-            If My.Settings.RunAtStartup = True Then
+            If My.Settings.RunAtStartup = True And SDRTState() = 0 Then
                 UpdateLog(FormattedTime() & " AUTO RUN AT STARTUP INITIATED START")
                 StartSDRT()
             End If
@@ -262,7 +270,15 @@ Public Class PrimaryForm
     ' ASYNC OUTPUT HANDLER FOR SDRTRUNK COMMAND WINDOW - MONITOR FOR ERRORS
     Private Sub ReadStandardOutput(sender As Object, args As DataReceivedEventArgs)
         If args.Data IsNot Nothing Then
-            If args.Data.Contains("Couldn't design final output low pass filter") Or args.Data.Contains("org.usb4java.LibUsbException") Or args.Data.Contains("java.lang.IllegalArgumentException") Or args.Data.Contains("throwing away samples") Then
+            Dim RestartNeeded As Boolean = False
+
+            For Each ErrorMessage As String In RestartErrors
+                If args.Data.Contains(ErrorMessage) Then
+                    RestartNeeded = True
+                End If
+            Next
+
+            If RestartNeeded = True Then
                 UpdateLog(args.Data)
 
                 If AutoRestartMenuItem.CheckState = CheckState.Checked Then
