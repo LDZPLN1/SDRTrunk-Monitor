@@ -13,6 +13,7 @@ Settings Overview:
 * Timed Command - (Optional) An external command to run every "x" seconds while SDRTrunk is running
 * Poll Timer - How often the app polls the SDRTrunk process to verify it is still running.
 * Ext Timer - How often to run the Timed Command
+* Run SDRTrunk At Startup - If SDRTrunk is not already running it will automatically be started after SDRTrunk Monitor is run
 
 Toggle Menu Options:
 * Auto Restart - Force an automated restart of SDRTrunk if the process dies or an error is detected. If this option is not checked, you will only receive a single tray notification when an error appears to have occurred or the process appears to have died
@@ -24,3 +25,7 @@ I'm sure the code could be cleaner... but I do this for fun and in my spare time
 Only tested on Windows 11, but it should work on Windows 10 as well.
 
 As an example, I use the external command setting to execute a Python script to update the SDRTrunk XML file in between restarts with new radio ID data from a database. The timed command is used to execute a Python script that imports SDRTrunk data once per hour and updates the database.  This script also scans the saved MP3 files to perform audio detection (to discard dead air files) and archives files into a folder structure based on date/system/group/TGID for known RIDs. This leaves me with a short list of RIDs to identify.
+
+If upgrading from a previous version, you can copy the user.config file from C:\Users\[username]\AppData\Local\SDRTrunk_Monitor\[SDRTrunkxxxxx]\[old version] to the \[new version] folder:
+
+i.e., Copy user.config from C:\Users\[username]\AppData\Local\SDRTrunk_Monitor\SDRTrunk_Monitor_Url_[random]\1.2.3.0 to C:\Users\Douglas\AppData\Local\SDRTrunk_Monitor\SDRTrunk_Monitor_Url_[random]\1.2.4.0
