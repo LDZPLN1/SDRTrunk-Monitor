@@ -28,4 +28,4 @@ As an example, I use the external command setting to execute a Python script to 
 
 If upgrading from a previous version, you can copy the user.config file from C:\Users\\[username]\AppData\Local\SDRTrunk_Monitor\\[SDRTrunkxxxxx]\\[old version] to the \\[new version] folder:
 
-i.e., Copy user.config from C:\Users\\[username]\AppData\Local\SDRTrunk_Monitor\SDRTrunk_Monitor_Url_[random]\1.2.3.0 to C:\Users\\[username\AppData\Local\SDRTrunk_Monitor\SDRTrunk_Monitor_Url_[random]\1.2.4.0
+i.e., Copy user.config from C:\Users\\[username]\AppData\Local\SDRTrunk_Monitor\SDRTrunk_Monitor_Url_[random]\1.2.3.0 to C:\Users\\[username]\AppData\Local\SDRTrunk_Monitor\SDRTrunk_Monitor_Url_[random]\1.2.4.0
