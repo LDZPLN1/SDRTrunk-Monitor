@@ -196,9 +196,9 @@ Namespace My
     Friend Module MySettingsProperty
         
         <Global.System.ComponentModel.Design.HelpKeywordAttribute("My.Settings")>  _
-        Friend ReadOnly Property Settings() As Global.SDR_Trunk_Monitor.My.MySettings
+        Friend ReadOnly Property Settings() As Global.SDRTrunk_Monitor.My.MySettings
             Get
-                Return Global.SDR_Trunk_Monitor.My.MySettings.Default
+                Return Global.SDRTrunk_Monitor.My.MySettings.Default
             End Get
         End Property
     End Module
